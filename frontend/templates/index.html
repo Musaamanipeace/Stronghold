@@ -103,7 +103,35 @@
                     </div>
                 </div>
             </div>
-        </div>
+        
+            <!-- Card 4: Active Escrow Tracking Board -->
+            <div class="card" id="trackingPanel" style="display: none; grid-column: 1 / -1;">
+                <h2>4. Active Escrow Tracking Board</h2>
+                <p style="color: #94a3b8; margin-bottom: 15px;">Real-time status tracking of structural multi-sig addresses on-chain.</p>
+
+                <div style="overflow-x: auto;">
+                    <table style="width: 100%; border-collapse: collapse; color: #e2e8f0;">
+                        <thead>
+                            <tr style="border-bottom: 2px solid #334155;">
+                                <th style="text-align: left; padding: 12px; color: #94a3b8;">Vault ID</th>
+                                <th style="text-align: left; padding: 12px; color: #94a3b8;">Multisig Address</th>
+                                <th style="text-align: left; padding: 12px; color: #94a3b8;">Amount (Sats)</th>
+                                <th style="text-align: center; padding: 12px; color: #94a3b8;">Milestones</th>
+                                <th style="text-align: center; padding: 12px; color: #94a3b8;">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="liveVaultRows">
+                            <tr>
+                                <td colspan="5" style="text-align: center; padding: 20px; color: #64748b;">
+                                    No active escrow tracks discovered for this profile context.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            </div>
     </div>
 
     <script>
@@ -120,6 +148,11 @@
 
             // Process UI elements once rendering execution is complete
             window.addEventListener('DOMContentLoaded', () => {
+                if (activeRole === 'sponsor') {
+                    document.getElementById('trackingPanel').style.display = 'block';
+                    loadActiveUserVaults();
+                }
+
                 document.getElementById('userRoleBadge').innerText = activeRole;
                 
                 if (activeRole === 'sponsor') {
@@ -207,7 +240,55 @@
             document.getElementById('calcBorrow').innerText = `Ksh ${Math.round(maxBorrowKsh).toLocaleString()}`;
         }
 
+
+        let activeVaultId = null;
+
+        async function loadActiveUserVaults() {
+            const userId = localStorage.getItem('sh_user_id');
+            const tbody = document.getElementById('liveVaultRows');
+            
+            if (!userId || !tbody) return;
+
+            try {
+                const response = await fetch(`${BACKEND_URL}/api/vaults/user/${userId}`);
+                const result = await response.json();
+
+                if (result.success && result.vaults && result.vaults.length > 0) {
+                    tbody.innerHTML = ''; // Clear empty placeholder configurations
+                    
+                    result.vaults.forEach(vault => {
+                        const badgeClass = vault.status === 'released' ? 'badge-released' : 
+                                           vault.status === 'breached_refunded' ? 'badge-breached' : 'badge-locked';
+                        
+                        const displayStatus = vault.status.replace('_', ' ').toUpperCase();
+
+                        const row = `
+                            <tr style="border-bottom: 1px solid #334155; cursor: pointer;" onclick="selectVault('${vault.id}')">
+                                <td style="padding: 12px;">${vault.id.substring(0, 8)}...</td>
+                                <td style="padding: 12px;">${vault.multisig_address.substring(0, 20)}...</td>
+                                <td style="padding: 12px;">${vault.amount_sats.toLocaleString()}</td>
+                                <td style="padding: 12px; text-align: center;">${vault.milestones_completed} / ${vault.milestones_total}</td>
+                                <td style="padding: 12px; text-align: center;"><span class="badge ${badgeClass}">${displayStatus}</span></td>
+                            </tr>
+                        `;
+                        tbody.innerHTML += row;
+                    });
+                }
+            } catch (error) {
+                console.error("Failed to sync live asset table rows:", error);
+            }
+        }
+
+        function selectVault(vaultId) {
+            activeVaultId = vaultId;
+            document.getElementById('oracleOutput').style.display = 'block';
+            document.getElementById('oracleOutputText').innerText = `[SELECTED ACTIVE VAULT]\nVault ID: ${vaultId}\nOracle controls are now tracking this record structure.`;
+            document.getElementById('oracleOutputText').style.color = "#38bdf8";
+        }
+
         calculateLoanMargins();
     </script>
 </body>
 </html>
+
+
