@@ -1,0 +1,11 @@
+{
+  "dependencies": {
+    "@supabase/supabase-js": "^2.108.1",
+    "bitcoinjs-lib": "^7.0.1",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "ecpair": "^3.0.1",
+    "express": "^5.2.1",
+    "tiny-secp256k1": "^2.2.4"
+  }
+}
