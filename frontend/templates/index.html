@@ -19,7 +19,24 @@
                     <a href="javascript:handleLogout()" style="color: #ef4444; text-decoration: none; margin-left: 15px;">Logout</a>
                 </span>
             </div>
-        </nav>
+                <!-- Global Error & Alert Toast Container -->
+        <div id="errorToast" style="display: none; position: fixed; top: 20px; right: 20px; max-width: 400px; background-color: #ef4444; color: white; padding: 16px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); z-index: 9999; animation: slideIn 0.3s ease-out;">
+            <div style="display: flex; justify-content: space-between; align-items: start;">
+                <div style="flex: 1;">
+                    <strong id="errorTitle">Error</strong>
+                    <p id="errorMessage" style="margin: 5px 0 0 0; font-size: 13px;"></p>
+                </div>
+                <button onclick="dismissError()" style="background: none; border: none; color: white; font-size: 20px; cursor: pointer; padding: 0;">×</button>
+            </div>
+        </div>
+
+        <style>
+            @keyframes slideIn {
+                from { transform: translateX(500px); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+        </style>
+</nav>
 
         <header>
             <h1>StrongHold Non-Custodial Sacco Engine</h1>
@@ -142,18 +159,23 @@
 
     <script>
         // Verification Guard: Run instantly when index.html mounts into browser frame
-        (function enforceSessionBounds() {
+                (function enforceSessionBounds() {
             const activeToken = localStorage.getItem('sh_session_token');
             const activeRole = localStorage.getItem('sh_user_role');
+            const userId = localStorage.getItem('sh_user_id');
 
-            if (!activeToken || !activeRole) {
-                // Drop network routes immediately if session parameters are missing
+            if (!activeToken || !activeRole || !userId) {
+                console.warn('[Route Guard] Session invalid - redirecting to login');
+                localStorage.clear();
                 window.location.href = 'login.html';
                 return;
             }
+            
+            console.log('[Route Guard] index.html - Session valid, role:', activeRole);
 
             // Process UI elements once rendering execution is complete
             window.addEventListener('DOMContentLoaded', () => {
+                disableOracleControls(true); // Disable until vault initialized
                 if (activeRole === 'sponsor') {
                     document.getElementById('trackingPanel').style.display = 'block';
                     loadActiveUserVaults();
@@ -178,14 +200,66 @@
             window.location.href = 'login.html';
         }
 
-        let currentMilestones = 0;
+        
+        // ===== PHASE 1: ERROR HANDLING & STATE MANAGEMENT =====
+        
+        function showError(title, message) {
+            const toast = document.getElementById('errorToast');
+            document.getElementById('errorTitle').innerText = title;
+            document.getElementById('errorMessage').innerText = message;
+            toast.style.display = 'block';
+            
+            // Auto-dismiss after 8 seconds
+            setTimeout(dismissError, 8000);
+        }
+
+        function dismissError() {
+            document.getElementById('errorToast').style.display = 'none';
+        }
+
+        function setButtonLoading(buttonId, isLoading) {
+            const button = document.getElementById(buttonId);
+            if (!button) return;
+            
+            button.disabled = isLoading;
+            button.style.opacity = isLoading ? '0.6' : '1';
+            button.style.cursor = isLoading ? 'not-allowed' : 'pointer';
+            button.innerText = isLoading ? '⏳ Processing...' : button.getAttribute('data-original-text');
+        }
+
+        function disableOracleControls(disabled = true) {
+            const milestone = document.querySelector('button[onclick="passMilestone()"]');
+            const breach = document.querySelector('button[onclick="logBreach()"]');
+            
+            if (milestone) {
+                milestone.disabled = disabled;
+                milestone.style.opacity = disabled ? '0.5' : '1';
+                milestone.title = disabled ? 'Initialize a vault first' : '';
+            }
+            if (breach) {
+                breach.disabled = disabled;
+                breach.style.opacity = disabled ? '0.5' : '1';
+                breach.title = disabled ? 'Initialize a vault first' : '';
+            }
+        }
+
+let currentMilestones = 0;
         let totalMilestones = 3;
         let isVaultClosed = false;
 
-        function simulateVaultCreation() {
-            const sponsor = document.getElementById('sponsorKey').value.substring(0, 10);
-            const patient = document.getElementById('patientKey').value.substring(0, 10);
-            const sats = document.getElementById('vaultSats').value;
+                function simulateVaultCreation() {
+            try {
+                const sponsor = document.getElementById('sponsorKey').value.trim();
+                const patient = document.getElementById('patientKey').value.trim();
+                const sats = document.getElementById('vaultSats').value;
+                
+                if (!sponsor || !patient || !sats) {
+                    showError('Validation Error', 'All fields are required before vault creation.');
+                    return;
+                }
+                
+                const sponsorPrefix = sponsor.substring(0, 10);
+                const patientPrefix = patient.substring(0, 10);
             const mockAddress = "2N" + Math.random().toString(36).substring(2, 15).toUpperCase() + sponsor.toUpperCase();
             
             document.getElementById('vaultOutput').style.display = 'block';
@@ -193,6 +267,7 @@
             
             currentMilestones = 0;
             isVaultClosed = false;
+            disableOracleControls(false); // Enable oracle controls
             document.getElementById('vaultBadge').innerText = "Locked";
             document.getElementById('vaultBadge').className = "badge badge-locked";
             document.getElementById('oracleOutput').style.display = 'none';
@@ -249,7 +324,7 @@
 
         let activeVaultId = null;
 
-        async function loadActiveUserVaults() {
+                async function loadActiveUserVaults() {
             const userId = localStorage.getItem('sh_user_id');
             const tbody = document.getElementById('liveVaultRows');
             
@@ -257,6 +332,11 @@
 
             try {
                 const response = await fetch(`${BACKEND_URL}/api/vaults/user/${userId}`);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: Failed to fetch vaults`);
+                }
+                
                 const result = await response.json();
 
                 if (result.success && result.vaults && result.vaults.length > 0) {
@@ -280,8 +360,9 @@
                         tbody.innerHTML += row;
                     });
                 }
-            } catch (error) {
-                console.error("Failed to sync live asset table rows:", error);
+                        } catch (error) {
+                console.error("Vault sync error:", error);
+                showError('Vault Sync Failed', `Unable to fetch active vaults: ${error.message}`);
             }
         }
 
@@ -329,6 +410,11 @@
     </script>
 </body>
 </html>
+
+
+
+
+
 
 
 
