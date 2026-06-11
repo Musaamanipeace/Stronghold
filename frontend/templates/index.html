@@ -1,0 +1,213 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StrongHold Dashboard</title>
+    <link rel="stylesheet" href="../static/style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Navigation Bar -->
+        <nav class="navbar">
+            <a href="home.html" class="nav-logo">⚡ StrongHold</a>
+            <div class="nav-links">
+                <a href="home.html">Home</a>
+                <a href="about.html">About Me</a>
+                <span style="color: #94a3b8; font-size: 14px;">
+                    Role: <span id="userRoleBadge" class="badge badge-locked">Loading...</span>
+                    <a href="javascript:handleLogout()" style="color: #ef4444; text-decoration: none; margin-left: 15px;">Logout</a>
+                </span>
+            </div>
+        </nav>
+
+        <header>
+            <h1>StrongHold Non-Custodial Sacco Engine</h1>
+            <p class="subtitle">Visualizing 2-of-3 Multisig Verification & Lending Safeguards</p>
+        </header>
+
+        <div class="grid">
+            <!-- Card 1: Escrow Initialization -->
+            <div class="card" id="sponsorPanel" style="display: none;">
+                <h2>1. Escrow Initialization</h2>
+                
+                <div class="form-group">
+                    <label>Sponsor Public Key (Secp256k1 Hex)</label>
+                    <input type="text" id="sponsorKey" placeholder="02a1b2c3d4e5f6..." value="02a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2">
+                </div>
+
+                <div class="form-group">
+                    <label>Patient Public Key (Secp256k1 Hex)</label>
+                    <input type="text" id="patientKey" placeholder="03b2c3d4e5f6..." value="03b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3">
+                </div>
+
+                <div class="form-group">
+                    <label>Funding Amount (Satoshis)</label>
+                    <input type="number" id="vaultSats" placeholder="100000" value="100000">
+                </div>
+
+                <button onclick="simulateVaultCreation()">Generate Multisig Address</button>
+                <div id="vaultOutput" style="display: none;">
+                    <div class="output-box" id="vaultAddressText"></div>
+                </div>
+            </div>
+
+            <!-- Card 2: Clinical Oracle & Recovery Monitor -->
+            <div class="card" id="oraclePanel" style="display: none;">
+                <h2>2. Clinical Oracle & Recovery Monitor</h2>
+                <p>Simulate medical tracking updates verifying milestones.</p>
+
+                <div style="margin: 15px 0;">
+                    <strong>Status:</strong>
+                    <span id="vaultBadge" class="badge badge-locked">Locked</span>
+                </div>
+
+                <div class="milestone-container">
+                    <div class="milestone-dot" id="m1">1</div>
+                    <div class="milestone-dot" id="m2">2</div>
+                    <div class="milestone-dot" id="m3">3</div>
+                </div>
+
+                <div>
+                    <button onclick="passMilestone()" style="background-color: #22c55e; margin-bottom: 10px;">Pass Milestone</button>
+                    <button onclick="logBreach()" style="background-color: #ef4444;">Log Breach</button>
+                </div>
+
+                <div id="oracleOutput" style="display: none;">
+                    <div class="output-box" id="oracleOutputText"></div>
+                </div>
+            </div>
+
+            <!-- Card 3: Chama SACCO Risk Margin Metrics -->
+            <div class="card" id="memberPanel" style="display: none;">
+                <h2>3. Chama SACCO Risk Margin Metrics</h2>
+                
+                <div class="form-group">
+                    <label>Pledged Savings Collateral (Satoshis)</label>
+                    <input type="number" id="collateralSats" placeholder="500000" value="500000" oninput="calculateLoanMargins()">
+                </div>
+
+                <div style="background-color: #0f172a; padding: 15px; border-radius: 6px;">
+                    <div style="margin-bottom: 10px;">
+                        <span style="color: #94a3b8;">Est. Collateral Value:</span>
+                        <span style="color: #38bdf8; font-weight: bold;" id="calcMarket">Ksh 42,500</span>
+                    </div>
+
+                    <div style="margin-bottom: 10px;">
+                        <span style="color: #94a3b8;">Max Allowed Borrow Limit (65% LTV):</span>
+                        <span style="color: #38bdf8; font-weight: bold;" id="calcBorrow">Ksh 27,625</span>
+                    </div>
+
+                    <div style="font-size: 12px; color: #64748b;">
+                        Calculated using strict LTV guardrails. If collateral shifts below asset threshold paths, liquidation signals auto-fire.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Verification Guard: Run instantly when index.html mounts into browser frame
+        (function enforceSessionBounds() {
+            const activeToken = localStorage.getItem('sh_session_token');
+            const activeRole = localStorage.getItem('sh_user_role');
+
+            if (!activeToken || !activeRole) {
+                // Drop network routes immediately if session parameters are missing
+                window.location.href = 'login.html';
+                return;
+            }
+
+            // Process UI elements once rendering execution is complete
+            window.addEventListener('DOMContentLoaded', () => {
+                document.getElementById('userRoleBadge').innerText = activeRole;
+                
+                if (activeRole === 'sponsor') {
+                    document.getElementById('userRoleBadge').className = "badge badge-locked";
+                    document.getElementById('sponsorPanel').style.display = 'block';
+                    document.getElementById('oraclePanel').style.display = 'block';
+                } else if (activeRole === 'member') {
+                    document.getElementById('userRoleBadge').className = "badge badge-released";
+                    document.getElementById('memberPanel').style.display = 'block';
+                    document.getElementById('oraclePanel').style.display = 'block';
+                }
+            });
+        })();
+
+        function handleLogout() {
+            localStorage.clear();
+            window.location.href = 'login.html';
+        }
+
+        let currentMilestones = 0;
+        let totalMilestones = 3;
+        let isVaultClosed = false;
+
+        function simulateVaultCreation() {
+            const sponsor = document.getElementById('sponsorKey').value.substring(0, 10);
+            const patient = document.getElementById('patientKey').value.substring(0, 10);
+            const sats = document.getElementById('vaultSats').value;
+            const mockAddress = "2N" + Math.random().toString(36).substring(2, 15).toUpperCase() + sponsor.toUpperCase();
+            
+            document.getElementById('vaultOutput').style.display = 'block';
+            document.getElementById('vaultAddressText').innerText = `[SUCCESS] P2SH Script Generated\nAddress: ${mockAddress}\nAmount: ${parseInt(sats).toLocaleString()} Sats\nStatus: Escrow active on Testnet ledger.`;
+            
+            currentMilestones = 0;
+            isVaultClosed = false;
+            document.getElementById('vaultBadge').innerText = "Locked";
+            document.getElementById('vaultBadge').className = "badge badge-locked";
+            document.getElementById('oracleOutput').style.display = 'none';
+            for(let i=1; i<=totalMilestones; i++) {
+                document.getElementById(`m${i}`).classList.remove('active');
+            }
+        }
+
+        function passMilestone() {
+            if (isVaultClosed) return;
+            currentMilestones++;
+            document.getElementById(`m${currentMilestones}`).classList.add('active');
+            
+            const outputBox = document.getElementById('oracleOutputText');
+            document.getElementById('oracleOutput').style.display = 'block';
+            
+            if(currentMilestones >= totalMilestones) {
+                isVaultClosed = true;
+                document.getElementById('vaultBadge').innerText = "Released";
+                document.getElementById('vaultBadge').className = "badge badge-released";
+                
+                const mockSignature = "30440220" + Math.random().toString(16).substring(2, 18) + "0220" + Math.random().toString(16).substring(2, 18);
+                outputBox.innerText = `[RELEASE CRITERIA MET]\nAll ${totalMilestones} recovery goals completed.\nStrongHold Server Co-Signature Added:\n${mockSignature}\n\nFunds successfully cleared for distribution.`;
+                outputBox.style.color = "#6ee7b7";
+            } else {
+                outputBox.innerText = `[ORACLE UPDATE LOGGED]\nMilestone ${currentMilestones} of ${totalMilestones} verified. Programmatic script remains locked. Waiting for remaining checkmarks.`;
+                outputBox.style.color = "#38bdf8";
+            }
+        }
+
+        function logBreach() {
+            document.getElementById('vaultBadge').innerText = "Breached";
+            document.getElementById('vaultBadge').className = "badge badge-breached";
+            
+            const outputBox = document.getElementById('oracleOutputText');
+            document.getElementById('oracleOutput').style.display = 'block';
+            outputBox.innerText = "[BREACH DETECTED]\nRecovery protocol violation logged.\nStrongHold Server and Donor co-sign refund transaction.\nFunds returned to original donor wallet.";
+            outputBox.style.color = "#fca5a5";
+            isVaultClosed = true;
+        }
+
+        function calculateLoanMargins() {
+            const sats = document.getElementById('collateralSats').value || 0;
+            const satoshisToBtc = sats / 100000000;
+            const btcToKshPrice = 8500000; 
+            
+            const marketValueKsh = satoshisToBtc * btcToKshPrice;
+            const maxBorrowKsh = marketValueKsh * 0.65;
+
+            document.getElementById('calcMarket').innerText = `Ksh ${Math.round(marketValueKsh).toLocaleString()}`;
+            document.getElementById('calcBorrow').innerText = `Ksh ${Math.round(maxBorrowKsh).toLocaleString()}`;
+        }
+
+        calculateLoanMargins();
+    </script>
+</body>
+</html>

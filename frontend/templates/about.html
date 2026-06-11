@@ -1,0 +1,110 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StrongHold - Engineering Specification</title>
+    <link rel="stylesheet" href="../static/style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Navigation Bar -->
+        <nav class="navbar">
+            <a href="home.html" class="nav-logo">⚡ StrongHold</a>
+            <div class="nav-links">
+                <a href="home.html">Home</a>
+                <a href="about.html" class="active">About Me</a>
+                <a href="login.html">Login / Access App</a>
+            </div>
+        </nav>
+
+        <!-- About Section -->
+        <section class="hero-section">
+            <h1>Engineering Specification</h1>
+            <p style="color: #94a3b8; font-size: 16px; line-height: 1.8; margin: 20px auto; max-width: 800px; text-align: left;">
+                StrongHold is a production-grade, non-custodial Bitcoin escrow platform designed to enable recovery-centered lending and decentralized community savings (SACCO) coordination. 
+                Built on open-source Bitcoin infrastructure, the system enforces financial accountability through cryptographic multisignature contracts, verifiable clinical milestones, 
+                and transparent collateral management.
+            </p>
+        </section>
+
+        <!-- Tech Stack -->
+        <div class="grid">
+            <div class="card">
+                <h2>🔗 Bitcoin Layer (L1)</h2>
+                <ul style="color: #94a3b8; line-height: 1.8; padding-left: 20px;">
+                    <li><strong>bitcoinjs-lib:</strong> Multisig script building & transaction crafting</li>
+                    <li><strong>ecpair + tiny-secp256k1:</strong> ECDSA signing & key management</li>
+                    <li><strong>Mempool.space API:</strong> Transaction broadcast & confirmation tracking</li>
+                    <li><strong>P2WSH (P2SH):</strong> 2-of-3 witness script escrow contracts</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h2>⚡ Lightning Network</h2>
+                <ul style="color: #94a3b8; line-height: 1.8; padding-left: 20px;">
+                    <li><strong>Alby WebLN API:</strong> In-browser Lightning payments & invoice handling</li>
+                    <li><strong>LNbits:</strong> Self-hosted or community Lightning node gateway</li>
+                    <li><strong>Micro-payments:</strong> Instant survey compensation at scale</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h2>🗄️ Backend & Database</h2>
+                <ul style="color: #94a3b8; line-height: 1.8; padding-left: 20px;">
+                    <li><strong>Node.js + Express:</strong> RESTful API server & middleware</li>
+                    <li><strong>Supabase (PostgreSQL):</strong> User accounts, vault state, oracle logs</li>
+                    <li><strong>JWT Sessions:</strong> Stateless authentication tokens</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h2>🎨 Frontend & UX</h2>
+                <ul style="color: #94a3b8; line-height: 1.8; padding-left: 20px;">
+                    <li><strong>Vanilla JavaScript:</strong> No framework overhead, cryptographic UI state</li>
+                    <li><strong>Responsive CSS Grid:</strong> Mobile-first dark theme dashboard</li>
+                    <li><strong>localStorage:</strong> Client-side session persistence & key management</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Core Mechanisms -->
+        <section style="margin-top: 40px;">
+            <h2 style="color: #38bdf8; margin-bottom: 20px;">Core Mechanisms</h2>
+            
+            <div class="card">
+                <h3 style="color: #f1f5f9; margin-top: 0;">2-of-3 Multisig Escrow (Model A: Recovery-Bound)</h3>
+                <p style="color: #94a3b8; margin: 0;">
+                    <strong>Signers:</strong> Sponsor (Donor), Patient (Recipient), StrongHold Server (Oracle)<br>
+                    <strong>Release Path:</strong> Sponsor + Patient signatures after clinical milestones verified<br>
+                    <strong>Breach Path:</strong> Sponsor + Server signatures to refund on protocol violation<br>
+                    <strong>Script Type:</strong> OP_CHECKMULTISIG (2-of-3 threshold)
+                </p>
+            </div>
+
+            <div class="card">
+                <h3 style="color: #f1f5f9; margin-top: 0;">Volunteer Vesting (Model B: Task-Bound with CLTV)</h3>
+                <p style="color: #94a3b8; margin: 0;">
+                    <strong>Mechanism:</strong> Tasks unlock Bitcoin rewards after 14-day warranty lock (CheckLockTimeVerify)<br>
+                    <strong>Purpose:</strong> Ensures work quality & protects platform from malicious submissions<br>
+                    <strong>Script Type:</strong> OP_CLTV + OP_DROP (time-lock branch conditions)
+                </p>
+            </div>
+
+            <div class="card">
+                <h3 style="color: #f1f5f9; margin-top: 0;">SACCO Collateral Management (65% LTV Rule)</h3>
+                <p style="color: #94a3b8; margin: 0;">
+                    <strong>Calculation:</strong> Max Borrow = (BTC Holdings × Price) × 0.65<br>
+                    <strong>Liquidation Trigger:</strong> Automatic when collateral ratio drops below 65%<br>
+                    <strong>Purpose:</strong> Protects pooled member savings from market volatility
+                </p>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <div style="text-align: center; margin-top: 60px; padding-top: 20px; border-top: 1px solid #334155; color: #64748b; font-size: 13px;">
+            <p>StrongHold © 2024 | Open-Source | MIT License | Bitcoin + Lightning Network</p>
+        </div>
+    </div>
+</body>
+</html>
