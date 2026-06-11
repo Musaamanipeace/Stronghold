@@ -62,7 +62,13 @@
                     <span id="vaultBadge" class="badge badge-locked">Locked</span>
                 </div>
 
-                <div class="milestone-container">
+                
+                <div style="background-color: #0f172a; padding: 15px; border-radius: 6px; margin-bottom: 15px;">
+                    <h3 style="color: #38bdf8; margin-top: 0; margin-bottom: 10px;">🔐 Cryptographic Pre-flight Check</h3>
+                    <button onclick="verifyVaultKeys()" style="background-color: #8b5cf6; width: 100%; margin-bottom: 10px;">Verify Public Key Format</button>
+                    <div id="cryptoCheckOutput" style="display: none;" class="output-box"></div>
+                </div>
+<div class="milestone-container">
                     <div class="milestone-dot" id="m1">1</div>
                     <div class="milestone-dot" id="m2">2</div>
                     <div class="milestone-dot" id="m3">3</div>
@@ -286,9 +292,44 @@
             document.getElementById('oracleOutputText').style.color = "#38bdf8";
         }
 
+
+        function verifyVaultKeys() {
+            const sponsorKey = document.getElementById('sponsorKey').value.trim();
+            const patientKey = document.getElementById('patientKey').value.trim();
+            const output = document.getElementById('cryptoCheckOutput');
+            
+            output.style.display = 'block';
+            output.innerText = "Analyzing Secp256k1 key compressions...";
+
+            // Regular expression checking for exact 66-character (33-byte) compressed public key structure
+            const compressedKeyRegex = /^(02|03)[a-fA-F0-9]{64}$/;
+
+            const isSponsorValid = compressedKeyRegex.test(sponsorKey);
+            const isPatientValid = compressedKeyRegex.test(patientKey);
+
+            if (!isSponsorValid || !isPatientValid) {
+                output.style.color = "#ef4444";
+                output.innerText = `✖ CRYPTO VALIDATION FAILED:\n` +
+                                   `Sponsor Key Compressed Format: ${isSponsorValid ? 'Valid' : 'Invalid (Must be 66-hex chars starting with 02/03)'}\n` +
+                                   `Patient Key Compressed Format: ${isPatientValid ? 'Valid' : 'Invalid (Must be 66-hex chars starting with 02/03)'}\n\n` +
+                                   `Required: 02/03 prefix + 64 hex characters (total 66 chars)`;
+                return;
+            }
+
+            output.style.color = "#6ee7b7";
+            output.innerText = `✔ CRYPTO VALIDATION PASSED:\n\n` +
+                               `• Sponsor PubKey verified structure\n` +
+                               `• Patient PubKey verified structure\n` +
+                               `• Both keys are valid Secp256k1 compressed format\n` +
+                               `• Keys ready for 2-of-3 programmatic multi-sig compilation\n\n` +
+                               `Status: Ready to generate multisig address`;
+        }
+
         calculateLoanMargins();
     </script>
 </body>
 </html>
+
+
 
 
