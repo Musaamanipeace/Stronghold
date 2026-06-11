@@ -1,5 +1,6 @@
 ﻿// server.js - StrongHold Backend API Server
 const express = require('express');
+const jwt = require('jsonwebtoken');
 const cors = require('cors');
 const { errorHandlerMiddleware, StrongHoldError, DatabaseError } = require('./errors');
 
@@ -119,3 +120,6 @@ app.listen(PORT, () => {
 });
 
 module.exports = app;
+
+
+
