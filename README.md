@@ -1,4 +1,4 @@
-﻿# StrongHold: Non-Custodial Escrow & Sacco Engine
+# StrongHold: Non-Custodial Escrow & Sacco Engine
 
 A production-grade, decentralized Bitcoin escrow platform designed to enforce clinical recovery milestones and optimize community savings (Sacco) collateralization without central counterparty dependencies.
 
@@ -77,7 +77,7 @@ cd Stronghold
 ### 2. Switch to Development Branch
 
 \\\ash
-git checkout mamani
+git checkout amani
 \\\
 
 ### 3. Install Backend Dependencies
