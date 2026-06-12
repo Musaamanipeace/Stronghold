@@ -33,163 +33,257 @@
         <p class="subtitle">Interact with dynamic multi-sig structures, volatility spend constraints, and narrative key recovery.</p>
     </header>
 
-    <!-- Global Master Pool Status & Volatility Trigger -->
-    <div class="grid" style="grid-template-columns: 2fr 1fr; gap: 20px; margin-bottom: 25px;">
-        <!-- Card 1: Multi-Sig Pool Equity -->
-        <div class="card pool-card" style="display: flex; flex-direction: column; justify-content: space-between;">
-            <div>
-                <h2>StrongHold Master Multi-Sig Pool Equity</h2>
-                <p class="subtitle">Aggregated unspent asset volume generating background credit limit access.</p>
-            </div>
-            <div style="display: flex; flex-wrap: wrap; gap: 40px; margin-top: 20px;">
+    <!-- Tab Navigation Bar -->
+    <div class="tab-navigation">
+        <button id="btnTabOperational" class="tab-button active-tab" onclick="switchMainTab('operational')">⚡ Operational Core</button>
+        <button id="btnTabSettings" class="tab-button" onclick="switchMainTab('settings')">⚙️ Control & Settings</button>
+    </div>
+
+    <!-- Tab Content: Operational Core -->
+    <div id="tabContentOperational">
+        <!-- Global Master Pool Status -->
+        <div class="grid" style="grid-template-columns: 1fr; margin-bottom: 25px;">
+            <!-- Card 1: Multi-Sig Pool Equity -->
+            <div class="card pool-card" style="display: flex; flex-direction: column; justify-content: space-between;">
                 <div>
-                    <label>Total Staked Protocol Pool Balance</label>
-                    <div class="metric-highlight" id="lblMasterPoolBalance">14.82500000 BTC</div>
+                    <h2>StrongHold Master Multi-Sig Pool Equity</h2>
+                    <p class="subtitle">Aggregated unspent asset volume generating background credit limit access.</p>
                 </div>
-                <div>
-                    <label>Your Tokenized Pool Share Equity</label>
-                    <div class="metric-highlight" id="lblUserShares" style="color: #6ee7b7;">0.00000000 BTC</div>
+                <div style="display: flex; flex-wrap: wrap; gap: 40px; margin-top: 20px;">
+                    <div>
+                        <label>Total Staked Protocol Pool Balance</label>
+                        <div class="metric-highlight" id="lblMasterPoolBalance">14.82500000 BTC</div>
+                    </div>
+                    <div>
+                        <label>Your Tokenized Pool Share Equity</label>
+                        <div class="metric-highlight" id="lblUserShares" style="color: #6ee7b7;">0.00000000 BTC</div>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- Card 2: Volatility Spend Trigger -->
-        <div class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
-            <div>
-                <h2>Volatility Spend Trigger</h2>
-                <p class="subtitle">Verify when unspent collateral becomes spendable.</p>
+        <!-- Active Operational Panels based on Role -->
+        <div class="grid" style="grid-template-columns: 1fr; gap: 25px; margin-bottom: 60px;">
+            
+            <!-- Track 1: Student Environment -->
+            <div class="card" id="trackStudent" style="display: none; border-left: 4px solid #38bdf8;">
+                <h2>Youth Survey Staking & Credit Engine</h2>
+                <p class="subtitle" style="margin-bottom: 20px;">Complete academic research updates to expand locked asset shares. Qualify for fiat school fee loans while your Bitcoin grows untouched.</p>
+                
+                <div class="grid" style="grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+                    <div style="background: #0f172a; padding: 15px; border-radius: 6px;">
+                        <label>Locked Survey Balance</label>
+                        <div id="lblStudentSatBalance" style="color: #38bdf8; font-size: 20px; font-weight: 700; font-family: monospace;">0 Sats</div>
+                    </div>
+                    <div style="background: #0f172a; padding: 15px; border-radius: 6px;">
+                        <label id="lblLoanLimitHeading">Available Emergency Fiat Loan Limit (65% LTV)</label>
+                        <div id="lblStudentLoanLimit" style="color: #6ee7b7; font-size: 20px; font-weight: 700; font-family: monospace;">Ksh 0</div>
+                    </div>
+                </div>
+                <button onclick="submitSurveyTask()" style="background: linear-gradient(90deg, #38bdf8 0%, #0284c7 100%);">
+                    Complete High School Research Survey (+50,000 Sats)
+                </button>
             </div>
-            <div style="margin-top: 15px;">
+
+            <!-- Track 2: Sponsor Environment -->
+            <div class="card" id="trackSponsor" style="display: none; border-left: 4px solid #10b981;">
+                <h2>Sponsor Escrow & Volatility Yield Monitor</h2>
+                <p class="subtitle" style="margin-bottom: 20px;">Manage locks and milestone distributions. Clinical recovery milestones verify Patient behavior to unlock shared yield splits.</p>
+                
+                <div style="background: #0f172a; padding: 15px; border-radius: 6px; margin-bottom: 20px;">
+                    <div style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 15px; margin-bottom: 10px;">
+                        <div>
+                            <label>Active Escrow Vault ID</label>
+                            <span id="lblSponsorVaultId" style="font-family: monospace; font-size: 14px; color: #fff;">Loading...</span>
+                        </div>
+                        <div>
+                            <label>Multisig Ledger Address</label>
+                            <span id="lblSponsorMultisig" style="font-family: monospace; font-size: 14px; color: #38bdf8;">Loading...</span>
+                        </div>
+                        <div>
+                            <label>Escrow Balance</label>
+                            <span id="lblSponsorSats" style="font-family: monospace; font-size: 14px; color: #6ee7b7; font-weight: 700;">Loading...</span>
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 20px; margin-top: 15px;">
+                        <div style="flex: 1;">
+                            <label>Recovery Milestone Progress</label>
+                            <div style="background: #1e293b; height: 10px; border-radius: 5px; overflow: hidden; margin-top: 5px;">
+                                <div id="progressBar" style="background: #10b981; height: 100%; width: 0%; transition: width 0.3s ease;"></div>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; font-size: 11px; margin-top: 5px; color: #94a3b8;">
+                                <span id="lblMilestoneText">0 of 3 milestones met</span>
+                                <span id="lblVaultStatus">LOCKED</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap;">
+                    <button style="flex: 1; background-color: #10b981; color: #0f172a;" onclick="triggerSponsorEvent('milestone')">
+                        Verify Clinic Milestone
+                    </button>
+                    <button style="flex: 1; background-color: #ef4444; color: #fff;" onclick="triggerSponsorEvent('breach')">
+                        Log Program Breach
+                    </button>
+                </div>
+                
+                <label>Real-Time Oracle Stream Log</label>
+                <div class="interactive-log" id="rehabLog">System idle. Ready for oracle stream monitoring inputs...</div>
+            </div>
+
+            <!-- Track 3: Vendor Environment -->
+            <div class="card" id="trackVendor" style="display: none; border-left: 4px solid #8b5cf6;">
+                <h2>Deferred Spend Vendor Share System</h2>
+                <p class="subtitle" style="margin-bottom: 20px;">Route customer settlement balances directly into the Master Pool rather than standard liquidation. Receive tokenized yield shares.</p>
+                
+                <div style="background: #0f172a; padding: 15px; border-radius: 6px; margin-bottom: 20px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                        <span>Total Staked Vendor Shares:</span>
+                        <strong id="lblVendorShares" style="color: #8b5cf6; font-family: monospace;">0.00000000 BTC</strong>
+                    </div>
+                    <div style="font-size: 12px; color: #64748b; line-height: 1.4;">
+                        Your deferred assets are locked in the Multi-Sig Master Pool. You can leverage this balance as collateral to request business credit lines in local currencies.
+                    </div>
+                </div>
+
                 <div class="form-group">
-                    <label>Target Spend Price (USD)</label>
-                    <input type="number" id="txtTriggerPrice" value="120000" oninput="calculateSpendabilityThreshold()">
+                    <label>Invoice Customer Settlement Value (Satoshis)</label>
+                    <input type="number" id="numInvoiceSats" value="250000" style="padding: 12px; margin-bottom: 15px;">
                 </div>
-                <div style="font-size: 12px; line-height: 1.6; min-height: 50px;" id="lblTriggerStatus">
-                    Calculating volatility delta against spot network price...
-                </div>
+                <button onclick="submitVendorInvoice()" style="background: linear-gradient(90deg, #8b5cf6 0%, #7c3aed 100%);">
+                    Deposit Invoice into Master Pool Shares
+                </button>
             </div>
+
         </div>
     </div>
 
-    <!-- Active Operational Panels based on Role -->
-    <div class="grid" style="grid-template-columns: 1fr; gap: 25px; margin-bottom: 25px;">
-        
-        <!-- Track 1: Student Environment -->
-        <div class="card" id="trackStudent" style="display: none; border-left: 4px solid #38bdf8;">
-            <h2>Youth Survey Staking & Credit Engine</h2>
-            <p class="subtitle" style="margin-bottom: 20px;">Complete academic research updates to expand locked asset shares. Qualify for fiat school fee loans while your Bitcoin grows untouched.</p>
-            
-            <div class="grid" style="grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
-                <div style="background: #0f172a; padding: 15px; border-radius: 6px;">
-                    <label>Locked Survey Balance</label>
-                    <div id="lblStudentSatBalance" style="color: #38bdf8; font-size: 20px; font-weight: 700; font-family: monospace;">0 Sats</div>
-                </div>
-                <div style="background: #0f172a; padding: 15px; border-radius: 6px;">
-                    <label>Available Emergency Fiat Loan Limit (65% LTV)</label>
-                    <div id="lblStudentLoanLimit" style="color: #6ee7b7; font-size: 20px; font-weight: 700; font-family: monospace;">Ksh 0</div>
-                </div>
+    <!-- Tab Content: Control & Settings -->
+    <div id="tabContentSettings" style="margin-bottom: 60px;" hidden>
+        <div class="settings-layout">
+            <!-- Settings Sidebar Navigation -->
+            <div class="settings-nav">
+                <button id="btnSettingsProfile" class="settings-nav-item active-settings-item" onclick="switchSettingsPane('profile')">👤 Profile Settings</button>
+                <button id="btnSettingsSecurity" class="settings-nav-item" onclick="switchSettingsPane('security')">🔒 Security & Keys</button>
+                <button id="btnSettingsPreferences" class="settings-nav-item" onclick="switchSettingsPane('preferences')">⚙️ Protocol Preferences</button>
             </div>
-            <button onclick="submitSurveyTask()" style="background: linear-gradient(90deg, #38bdf8 0%, #0284c7 100%);">
-                Complete High School Research Survey (+50,000 Sats)
-            </button>
-        </div>
 
-        <!-- Track 2: Sponsor Environment -->
-        <div class="card" id="trackSponsor" style="display: none; border-left: 4px solid #10b981;">
-            <h2>Sponsor Escrow & Volatility Yield Monitor</h2>
-            <p class="subtitle" style="margin-bottom: 20px;">Manage locks and milestone distributions. Clinical recovery milestones verify Patient behavior to unlock shared yield splits.</p>
-            
-            <div style="background: #0f172a; padding: 15px; border-radius: 6px; margin-bottom: 20px;">
-                <div style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 15px; margin-bottom: 10px;">
-                    <div>
-                        <label>Active Escrow Vault ID</label>
-                        <span id="lblSponsorVaultId" style="font-family: monospace; font-size: 14px; color: #fff;">Loading...</span>
-                    </div>
-                    <div>
-                        <label>Multisig Ledger Address</label>
-                        <span id="lblSponsorMultisig" style="font-family: monospace; font-size: 14px; color: #38bdf8;">Loading...</span>
-                    </div>
-                    <div>
-                        <label>Escrow Balance</label>
-                        <span id="lblSponsorSats" style="font-family: monospace; font-size: 14px; color: #6ee7b7; font-weight: 700;">Loading...</span>
-                    </div>
-                </div>
-                <div style="display: flex; gap: 20px; margin-top: 15px;">
-                    <div style="flex: 1;">
-                        <label>Recovery Milestone Progress</label>
-                        <div style="background: #1e293b; height: 10px; border-radius: 5px; overflow: hidden; margin-top: 5px;">
-                            <div id="progressBar" style="background: #10b981; height: 100%; width: 0%; transition: width 0.3s ease;"></div>
+            <!-- Settings Pane Viewport -->
+            <div class="settings-pane">
+                
+                <!-- Pane 1: Profile Configuration -->
+                <div id="paneProfile">
+                    <h2 style="border-left: 4px solid #38bdf8; padding-left: 10px; margin-top: 0;">Profile Configuration</h2>
+                    <p class="subtitle" style="margin-bottom: 20px;">Manage your terminal display alias and session properties.</p>
+                    
+                    <div class="settings-group">
+                        <div class="form-group">
+                            <label>User Display Alias</label>
+                            <div style="display: flex; gap: 10px;">
+                                <input type="text" id="txtSettingsAlias" placeholder="Enter your display alias..." style="flex: 1;">
+                                <button onclick="saveProfileAlias()" style="width: auto; padding: 0 25px; background-color: #10b981; color: #0f172a; border-radius: 6px;">Save Alias</button>
+                            </div>
                         </div>
-                        <div style="display: flex; justify-content: space-between; font-size: 11px; margin-top: 5px; color: #94a3b8;">
-                            <span id="lblMilestoneText">0 of 3 milestones met</span>
-                            <span id="lblVaultStatus">LOCKED</span>
+                    </div>
+
+                    <div class="settings-group">
+                        <div class="info-row">
+                            <span class="info-label">Account Session Email</span>
+                            <span class="info-value" id="lblSettingsEmail">---</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Operational Environment Role</span>
+                            <span class="info-value" id="lblSettingsRole">---</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Access Token Type</span>
+                            <span class="info-value" style="color: #6ee7b7;">SHA-256 Co-Signed Session</span>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <div style="display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap;">
-                <button style="flex: 1; background-color: #10b981; color: #0f172a;" onclick="triggerSponsorEvent('milestone')">
-                    Verify Clinic Milestone
-                </button>
-                <button style="flex: 1; background-color: #ef4444; color: #fff;" onclick="triggerSponsorEvent('breach')">
-                    Log Program Breach
-                </button>
-            </div>
-            
-            <label>Real-Time Oracle Stream Log</label>
-            <div class="interactive-log" id="rehabLog">System idle. Ready for oracle stream monitoring inputs...</div>
-        </div>
+                <!-- Pane 2: Security & Keys -->
+                <div id="paneSecurity" hidden>
+                    <h2 style="border-left: 4px solid #ef4444; padding-left: 10px; margin-top: 0;">Security & Cryptographic Setup</h2>
+                    <p class="subtitle" style="margin-bottom: 20px;">Configure narrative key recovery questions and view your raw wallet descriptors.</p>
+                    
+                    <div class="settings-group">
+                        <h3 style="color: #f1f5f9; font-size: 15px; margin-top: 0; margin-bottom: 8px;">Narrative Key Recovery Shards</h3>
+                        <p class="subtitle" style="margin-bottom: 15px; font-size: 12px;">Reassemble a co-signing key signature by entering unforgettable personal life answers.</p>
+                        
+                        <div class="grid" style="grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                            <div class="form-group">
+                                <label>Security Question 1: Childhood Experience Narrative</label>
+                                <input type="text" id="txtMemory1" placeholder="Describe the memory event simply..." style="padding: 10px;">
+                            </div>
+                            <div class="form-group">
+                                <label>Security Question 2: Favorite Hometown Location Key</label>
+                                <input type="text" id="txtMemory2" placeholder="Input the target location descriptor..." style="padding: 10px;">
+                            </div>
+                        </div>
 
-        <!-- Track 3: Vendor Environment -->
-        <div class="card" id="trackVendor" style="display: none; border-left: 4px solid #8b5cf6;">
-            <h2>Deferred Spend Vendor Share System</h2>
-            <p class="subtitle" style="margin-bottom: 20px;">Route customer settlement balances directly into the Master Pool rather than standard liquidation. Receive tokenized yield shares.</p>
-            
-            <div style="background: #0f172a; padding: 15px; border-radius: 6px; margin-bottom: 20px;">
-                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                    <span>Total Staked Vendor Shares:</span>
-                    <strong id="lblVendorShares" style="color: #8b5cf6; font-family: monospace;">0.00000000 BTC</strong>
+                        <button style="background-color: transparent; border: 1px solid #475569; color: #e2e8f0; font-weight: 600;" onclick="testNarrativeRecovery()">
+                            Test Cryptographic Shard Reassembly
+                        </button>
+
+                        <div id="narrativeOutput" style="display: none; margin-top: 15px; padding: 12px; background: #020617; border: 1px solid #1e293b; border-radius: 6px; font-family: monospace; font-size: 12px; line-height: 1.6;"></div>
+                    </div>
+
+                    <div class="settings-group" style="border-bottom: none;">
+                        <h3 style="color: #f1f5f9; font-size: 15px; margin-bottom: 8px;">Active Escrow Vault Signatures</h3>
+                        <div class="info-row">
+                            <span class="info-label">Active Vault ID</span>
+                            <span class="info-value" id="lblSettingsVaultId" style="color: #38bdf8;">Loading...</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Multisig Ledger Address</span>
+                            <span class="info-value" id="lblSettingsMultisig" style="color: #38bdf8;">Loading...</span>
+                        </div>
+                        <div class="info-row" style="flex-direction: column; align-items: flex-start; gap: 5px;">
+                            <span class="info-label">Redeem Script Hex</span>
+                            <span class="info-value" id="lblSettingsRedeemScript" style="color: #94a3b8; font-size: 11px; word-break: break-all; width: 100%;">Loading...</span>
+                        </div>
+                    </div>
                 </div>
-                <div style="font-size: 12px; color: #64748b; line-height: 1.4;">
-                    Your deferred assets are locked in the Multi-Sig Master Pool. You can leverage this balance as collateral to request business credit lines in local currencies.
+
+                <!-- Pane 3: Protocol Preferences -->
+                <div id="panePreferences" hidden>
+                    <h2 style="border-left: 4px solid #10b981; padding-left: 10px; margin-top: 0;">Protocol Preferences</h2>
+                    <p class="subtitle" style="margin-bottom: 20px;">Adjust volatility spend thresholds, select fiat units, and set up WebLN integrations.</p>
+                    
+                    <div class="settings-group">
+                        <h3 style="color: #f1f5f9; font-size: 15px; margin-top: 0; margin-bottom: 8px;">Volatility Spend Trigger</h3>
+                        <p class="subtitle" style="margin-bottom: 15px; font-size: 12px;">Lock Bitcoin spending until market action meets your co-signed target price trigger.</p>
+                        <div class="form-group">
+                            <label>Target Spend Price (USD)</label>
+                            <input type="number" id="txtTriggerPrice" value="120000" oninput="calculateSpendabilityThreshold()" style="padding: 10px;">
+                        </div>
+                        <div style="font-size: 12px; line-height: 1.6; min-height: 50px;" id="lblTriggerStatus">
+                            Calculating volatility delta against spot network price...
+                        </div>
+                    </div>
+
+                    <div class="settings-group" style="border-bottom: none;">
+                        <h3 style="color: #f1f5f9; font-size: 15px; margin-bottom: 8px;">Integration Properties</h3>
+                        <div class="form-group" style="margin-bottom: 15px;">
+                            <label>Preferred Fiat Currency Reference (LTV Calculations)</label>
+                            <select id="selCurrency" onchange="handleCurrencyChange()" style="width: 100%; background: #0f172a; border: 1px solid #334155; color: #fff; padding: 10px; border-radius: 6px;">
+                                <option value="KES">KES (Kenyan Shilling - Ksh)</option>
+                                <option value="USD">USD (United States Dollar - $)</option>
+                                <option value="EUR">EUR (Euro - €)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Lightning WebLN Integration Node</label>
+                            <input type="text" id="txtWebLnNode" value="https://api.alby.com/webln" style="padding: 10px;">
+                        </div>
+                    </div>
                 </div>
-            </div>
 
-            <div class="form-group">
-                <label>Invoice Customer Settlement Value (Satoshis)</label>
-                <input type="number" id="numInvoiceSats" value="250000" style="padding: 12px; margin-bottom: 15px;">
-            </div>
-            <button onclick="submitVendorInvoice()" style="background: linear-gradient(90deg, #8b5cf6 0%, #7c3aed 100%);">
-                Deposit Invoice into Master Pool Shares
-            </button>
-        </div>
-
-    </div>
-
-    <!-- Narrative Inheritance Section (For all environments) -->
-    <div class="card" style="margin-bottom: 60px; border: 1px dashed #475569;">
-        <h2>Narrative Key Recovery & Inheritance Safeguard</h2>
-        <p class="subtitle">Encrypt and store wallet key shards linked to unforgettable personal life experiences. Answer to reassemble private key signatures.</p>
-        
-        <div class="grid" style="grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 15px; margin-bottom: 20px;">
-            <div class="form-group">
-                <label>Security Question 1: Unforgettable Child Experience Narrative</label>
-                <input type="text" id="txtMemory1" placeholder="Describe the memory event simply..." style="padding: 12px;">
-            </div>
-            <div class="form-group">
-                <label>Security Question 2: Favorite Hometown Location Key</label>
-                <input type="text" id="txtMemory2" placeholder="Input the target location descriptor..." style="padding: 12px;">
             </div>
         </div>
-
-        <button style="background-color: transparent; border: 1px solid #475569; color: #e2e8f0; font-weight: 600;" onclick="testNarrativeRecovery()">
-            Test Cryptographic Shard Reassembly
-        </button>
-
-        <div id="narrativeOutput" style="display: none; margin-top: 20px;" class="output-box"></div>
     </div>
-
 </div>
 
 <script>
@@ -218,6 +312,14 @@
             document.getElementById('trackVendor').style.display = 'block';
         }
 
+        // Initialize Settings Panel Fields
+        document.getElementById('txtSettingsAlias').value = alias || 'Anonymous';
+        document.getElementById('lblSettingsEmail').innerText = (alias || 'user').toLowerCase() + '@stronghold.local';
+        document.getElementById('lblSettingsRole').innerText = (role || 'User').toUpperCase() + ' ENVIRONMENT';
+
+        const preferredCurrency = localStorage.getItem('sh_currency') || 'KES';
+        document.getElementById('selCurrency').value = preferredCurrency;
+
         fetchActiveVaults();
         calculateSpendabilityThreshold();
     });
@@ -242,7 +344,8 @@
                 amount_sats: userSharesSats,
                 status: 'locked',
                 milestones_total: 3,
-                milestones_completed: 1
+                milestones_completed: 1,
+                redeem_script: '522102a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b22103b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f8179853ae'
             };
             updateUIPanels();
         }
@@ -254,11 +357,29 @@
         const btcValue = userSharesSats / 100000000;
         document.getElementById('lblUserShares').innerText = btcValue.toFixed(8) + " BTC";
 
+        // Update settings-level escrow vault details
+        document.getElementById('lblSettingsVaultId').innerText = activeVault.id;
+        document.getElementById('lblSettingsMultisig').innerText = activeVault.multisig_address;
+        document.getElementById('lblSettingsRedeemScript').innerText = activeVault.redeem_script || '522102a1b2c3... (Multi-Sig Core)';
+
+        // Currency setting LTV calculation
+        const currency = localStorage.getItem('sh_currency') || 'KES';
+        let rate = 130;
+        let symbol = 'Ksh ';
+        if (currency === 'USD') {
+            rate = 1;
+            symbol = '$';
+        } else if (currency === 'EUR') {
+            rate = 0.92;
+            symbol = '€';
+        }
+
         if (role === 'student') {
             document.getElementById('lblStudentSatBalance').innerText = userSharesSats.toLocaleString() + " Sats";
-            // LTV Loan calculation: (BTC * Price * KES exchange rate 130) * 65% LTV
-            const kshLimit = (btcValue * currentBtcPriceUsd * 130) * 0.65;
-            document.getElementById('lblStudentLoanLimit').innerText = "Ksh " + Math.round(kshLimit).toLocaleString();
+            // LTV Loan calculation: (BTC * Price * exchange rate) * 65% LTV
+            const loanLimitVal = (btcValue * currentBtcPriceUsd * rate) * 0.65;
+            document.getElementById('lblLoanLimitHeading').innerText = `Available Emergency Fiat Loan Limit (65% LTV in ${currency})`;
+            document.getElementById('lblStudentLoanLimit').innerText = symbol + Math.round(loanLimitVal).toLocaleString();
         } else if (role === 'sponsor') {
             document.getElementById('lblSponsorVaultId').innerText = activeVault.id.substring(0, 8) + '...';
             document.getElementById('lblSponsorMultisig').innerText = activeVault.multisig_address.substring(0, 16) + '...';
@@ -429,6 +550,59 @@
             outputBox.style.color = "#ef4444";
             outputBox.innerText = `✖ RECOVERY ERROR: ${error.message}`;
         }
+    }
+
+    // Tab control logic
+    function switchMainTab(tabId) {
+        const tabOp = document.getElementById('tabContentOperational');
+        const tabSet = document.getElementById('tabContentSettings');
+        const btnOp = document.getElementById('btnTabOperational');
+        const btnSet = document.getElementById('btnTabSettings');
+
+        if (tabId === 'operational') {
+            tabOp.hidden = false;
+            tabSet.hidden = true;
+            btnOp.classList.add('active-tab');
+            btnSet.classList.remove('active-tab');
+        } else if (tabId === 'settings') {
+            tabOp.hidden = true;
+            tabSet.hidden = false;
+            btnOp.classList.remove('active-tab');
+            btnSet.classList.add('active-tab');
+        }
+    }
+
+    function switchSettingsPane(paneId) {
+        const paneProf = document.getElementById('paneProfile');
+        const paneSec = document.getElementById('paneSecurity');
+        const panePref = document.getElementById('panePreferences');
+
+        const btnProf = document.getElementById('btnSettingsProfile');
+        const btnSec = document.getElementById('btnSettingsSecurity');
+        const btnPref = document.getElementById('btnSettingsPreferences');
+
+        paneProf.hidden = paneId !== 'profile';
+        paneSec.hidden = paneId !== 'security';
+        panePref.hidden = paneId !== 'preferences';
+
+        btnProf.classList.toggle('active-settings-item', paneId === 'profile');
+        btnSec.classList.toggle('active-settings-item', paneId === 'security');
+        btnPref.classList.toggle('active-settings-item', paneId === 'preferences');
+    }
+
+    function saveProfileAlias() {
+        const newAlias = document.getElementById('txtSettingsAlias').value.trim();
+        if (!newAlias) return alert("Display alias cannot be empty.");
+
+        localStorage.setItem('sh_alias', newAlias);
+        document.getElementById('lblAlias').innerText = newAlias;
+        alert(`Display alias updated to "${newAlias}" successfully.`);
+    }
+
+    function handleCurrencyChange() {
+        const newCurrency = document.getElementById('selCurrency').value;
+        localStorage.setItem('sh_currency', newCurrency);
+        updateUIPanels();
     }
 
     function handleExit() {

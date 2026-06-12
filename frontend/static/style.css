@@ -353,3 +353,130 @@ button:hover {
     font-family: monospace;
     font-size: 12px;
 }
+
+/* Tab Navigation Styles */
+.tab-navigation {
+    display: flex;
+    gap: 10px;
+    border-bottom: 2px solid #1e293b;
+    margin-bottom: 25px;
+    padding-bottom: 10px;
+}
+
+.tab-button {
+    background: transparent;
+    color: #94a3b8;
+    border: none;
+    padding: 10px 20px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    border-radius: 6px;
+    width: auto;
+    transition: all 0.2s ease;
+}
+
+.tab-button:hover {
+    color: #f1f5f9;
+    background-color: #1e293b;
+}
+
+.tab-button.active-tab {
+    color: #38bdf8;
+    background-color: #1e293b;
+    box-shadow: 0 0 10px rgba(56, 189, 248, 0.1);
+}
+
+/* Settings Layout */
+.settings-layout {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 25px;
+    align-items: start;
+}
+
+@media (max-width: 768px) {
+    .settings-layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+.settings-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    background-color: #0f172a;
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid #1e293b;
+}
+
+.settings-nav-item {
+    text-align: left;
+    background: transparent;
+    color: #94a3b8;
+    border: none;
+    padding: 10px 15px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    border-radius: 6px;
+    width: 100%;
+    transition: all 0.2s ease;
+}
+
+.settings-nav-item:hover {
+    color: #f1f5f9;
+    background-color: #1e293b;
+}
+
+.settings-nav-item.active-settings-item {
+    color: #38bdf8;
+    background-color: #1e293b;
+    border-left: 3px solid #38bdf8;
+    padding-left: 12px;
+}
+
+.settings-pane {
+    background-color: #1e293b;
+    border-radius: 8px;
+    border: 1px solid #334155;
+    padding: 25px;
+    min-height: 400px;
+}
+
+/* Utilities for Settings Forms */
+.settings-group {
+    margin-bottom: 20px;
+    border-bottom: 1px solid #334155;
+    padding-bottom: 20px;
+}
+
+.settings-group:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid #1e293b;
+}
+
+.info-row:last-child {
+    border-bottom: none;
+}
+
+.info-label {
+    color: #94a3b8;
+    font-size: 13px;
+}
+
+.info-value {
+    color: #f1f5f9;
+    font-family: monospace;
+    font-size: 14px;
+    font-weight: 600;
+}
