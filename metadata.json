@@ -1,0 +1,6 @@
+{
+  "name": "Deni",
+  "description": "Deni is a peer-to-peer lending and debt-tracking application designed for communities to create informal loans and settle them using Bitcoin Lightning.",
+  "requestFramePermissions": ["camera"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
