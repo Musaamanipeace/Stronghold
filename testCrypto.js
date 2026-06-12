@@ -1,4 +1,4 @@
-﻿// testCrypto.js
+// testCrypto.js
 const bitcoin = require('bitcoinjs-lib');
 const { ECPairFactory } = require('ecpair');
 const ecc = require('tiny-secp256k1');
@@ -24,7 +24,7 @@ try {
     const serverPubKey = serverKeyPair.publicKey;
 
     // Output server key using clean string interpolation
-    console.log(`Server PubKey Generated: ${serverPubKey.toString('hex')}\n`);
+    console.log(`Server PubKey Generated: ${Buffer.from(serverPubKey).toString('hex')}\n`);
 
     // 2. Compile the public keys into an ordered array
     const pubkeys = [sponsorPubKey, patientPubKey, serverPubKey];
@@ -37,7 +37,7 @@ try {
 
     console.log("\x1b[32m%s\x1b[0m", "✔ CRYPTO SCRIPT SUCCESSFUL!");
     console.log(`Generated Multisig Address: ${multisigPayment.address}`);
-    console.log(`Redeem Script Hex: ${multisigPayment.redeem.output.toString('hex')}`);
+    console.log(`Redeem Script Hex: ${Buffer.from(multisigPayment.redeem.output).toString('hex')}`);
 
 } catch (error) {
     console.error("\x1b[31m%s\x1b[0m", "✖ CRYPTO CRASH:");

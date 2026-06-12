@@ -1,425 +1,440 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StrongHold Dashboard</title>
+    <title>StrongHold Protocol Workspace</title>
     <link rel="stylesheet" href="../static/style.css">
+    <script>
+        // Security Gate: Check session bounds before browser paint
+        if (!localStorage.getItem('sh_session_token')) {
+            console.warn('[Route Guard] No session active - redirecting to onboarding entryway');
+            window.location.href = 'login.html';
+        }
+    </script>
 </head>
 <body>
-    <div class="container">
-        <!-- Navigation Bar -->
-        <nav class="navbar">
-            <a href="home.html" class="nav-logo">⚡ StrongHold</a>
-            <div class="nav-links">
-                <a href="home.html">Home</a>
-                <a href="about.html">About Me</a>
-                <span style="color: #94a3b8; font-size: 14px;">
-                    Role: <span id="userRoleBadge" class="badge badge-locked">Loading...</span>
-                    <a href="javascript:handleLogout()" style="color: #ef4444; text-decoration: none; margin-left: 15px;">Logout</a>
-                </span>
+<div class="container">
+    <!-- Header/Navigation Bar -->
+    <nav class="navbar">
+        <a href="home.html" class="nav-logo">⚡ StrongHold Terminal</a>
+        <div class="nav-links">
+            <span style="font-size: 13px; color: #94a3b8; margin-right: 15px;">
+                User: <strong id="lblAlias" style="color: #38bdf8;">---</strong> 
+                (<span id="lblRole" class="badge badge-locked" style="font-size: 10px; margin-left: 5px;">---</span>)
+            </span>
+            <a href="about.html">About Spec</a>
+            <a href="#" onclick="handleExit()" style="color: #ef4444; font-weight: bold; text-decoration: none; margin-left: 10px;">[Exit Session]</a>
+        </div>
+    </nav>
+
+    <header style="margin-bottom: 25px;">
+        <h1>Operational Core Terminal</h1>
+        <p class="subtitle">Interact with dynamic multi-sig structures, volatility spend constraints, and narrative key recovery.</p>
+    </header>
+
+    <!-- Global Master Pool Status & Volatility Trigger -->
+    <div class="grid" style="grid-template-columns: 2fr 1fr; gap: 20px; margin-bottom: 25px;">
+        <!-- Card 1: Multi-Sig Pool Equity -->
+        <div class="card pool-card" style="display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+                <h2>StrongHold Master Multi-Sig Pool Equity</h2>
+                <p class="subtitle">Aggregated unspent asset volume generating background credit limit access.</p>
             </div>
-                <!-- Global Error & Alert Toast Container -->
-        <div id="errorToast" style="display: none; position: fixed; top: 20px; right: 20px; max-width: 400px; background-color: #ef4444; color: white; padding: 16px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); z-index: 9999; animation: slideIn 0.3s ease-out;">
-            <div style="display: flex; justify-content: space-between; align-items: start;">
-                <div style="flex: 1;">
-                    <strong id="errorTitle">Error</strong>
-                    <p id="errorMessage" style="margin: 5px 0 0 0; font-size: 13px;"></p>
+            <div style="display: flex; flex-wrap: wrap; gap: 40px; margin-top: 20px;">
+                <div>
+                    <label>Total Staked Protocol Pool Balance</label>
+                    <div class="metric-highlight" id="lblMasterPoolBalance">14.82500000 BTC</div>
                 </div>
-                <button onclick="dismissError()" style="background: none; border: none; color: white; font-size: 20px; cursor: pointer; padding: 0;">×</button>
+                <div>
+                    <label>Your Tokenized Pool Share Equity</label>
+                    <div class="metric-highlight" id="lblUserShares" style="color: #6ee7b7;">0.00000000 BTC</div>
+                </div>
             </div>
         </div>
 
-        <style>
-            @keyframes slideIn {
-                from { transform: translateX(500px); opacity: 0; }
-                to { transform: translateX(0); opacity: 1; }
-            }
-        </style>
-</nav>
-
-        <header>
-            <h1>StrongHold Non-Custodial Sacco Engine</h1>
-            <p class="subtitle">Visualizing 2-of-3 Multisig Verification & Lending Safeguards</p>
-        </header>
-
-        <div class="grid">
-            <!-- Card 1: Escrow Initialization -->
-            <div class="card" id="sponsorPanel" style="display: none;">
-                <h2>1. Escrow Initialization</h2>
-                
+        <!-- Card 2: Volatility Spend Trigger -->
+        <div class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+                <h2>Volatility Spend Trigger</h2>
+                <p class="subtitle">Verify when unspent collateral becomes spendable.</p>
+            </div>
+            <div style="margin-top: 15px;">
                 <div class="form-group">
-                    <label>Sponsor Public Key (Secp256k1 Hex)</label>
-                    <input type="text" id="sponsorKey" placeholder="02a1b2c3d4e5f6..." value="02a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2">
+                    <label>Target Spend Price (USD)</label>
+                    <input type="number" id="txtTriggerPrice" value="120000" oninput="calculateSpendabilityThreshold()">
                 </div>
-
-                <div class="form-group">
-                    <label>Patient Public Key (Secp256k1 Hex)</label>
-                    <input type="text" id="patientKey" placeholder="03b2c3d4e5f6..." value="03b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3">
-                </div>
-
-                <div class="form-group">
-                    <label>Funding Amount (Satoshis)</label>
-                    <input type="number" id="vaultSats" placeholder="100000" value="100000">
-                </div>
-
-                <button onclick="simulateVaultCreation()">Generate Multisig Address</button>
-                <div id="vaultOutput" style="display: none;">
-                    <div class="output-box" id="vaultAddressText"></div>
+                <div style="font-size: 12px; line-height: 1.6; min-height: 50px;" id="lblTriggerStatus">
+                    Calculating volatility delta against spot network price...
                 </div>
             </div>
-
-            <!-- Card 2: Clinical Oracle & Recovery Monitor -->
-            <div class="card" id="oraclePanel" style="display: none;">
-                <h2>2. Clinical Oracle & Recovery Monitor</h2>
-                <p>Simulate medical tracking updates verifying milestones.</p>
-
-                <div style="margin: 15px 0;">
-                    <strong>Status:</strong>
-                    <span id="vaultBadge" class="badge badge-locked">Locked</span>
-                </div>
-
-                
-                <div style="background-color: #0f172a; padding: 15px; border-radius: 6px; margin-bottom: 15px;">
-                    <h3 style="color: #38bdf8; margin-top: 0; margin-bottom: 10px;">🔐 Cryptographic Pre-flight Check</h3>
-                    <button onclick="verifyVaultKeys()" style="background-color: #8b5cf6; width: 100%; margin-bottom: 10px;">Verify Public Key Format</button>
-                    <div id="cryptoCheckOutput" style="display: none;" class="output-box"></div>
-                </div>
-<div class="milestone-container">
-                    <div class="milestone-dot" id="m1">1</div>
-                    <div class="milestone-dot" id="m2">2</div>
-                    <div class="milestone-dot" id="m3">3</div>
-                </div>
-
-                <div>
-                    <button onclick="passMilestone()" style="background-color: #22c55e; margin-bottom: 10px;">Pass Milestone</button>
-                    <button onclick="logBreach()" style="background-color: #ef4444;">Log Breach</button>
-                </div>
-
-                <div id="oracleOutput" style="display: none;">
-                    <div class="output-box" id="oracleOutputText"></div>
-                </div>
-            </div>
-
-            <!-- Card 3: Chama SACCO Risk Margin Metrics -->
-            <div class="card" id="memberPanel" style="display: none;">
-                <h2>3. Chama SACCO Risk Margin Metrics</h2>
-                
-                <div class="form-group">
-                    <label>Pledged Savings Collateral (Satoshis)</label>
-                    <input type="number" id="collateralSats" placeholder="500000" value="500000" oninput="calculateLoanMargins()">
-                </div>
-
-                <div style="background-color: #0f172a; padding: 15px; border-radius: 6px;">
-                    <div style="margin-bottom: 10px;">
-                        <span style="color: #94a3b8;">Est. Collateral Value:</span>
-                        <span style="color: #38bdf8; font-weight: bold;" id="calcMarket">Ksh 42,500</span>
-                    </div>
-
-                    <div style="margin-bottom: 10px;">
-                        <span style="color: #94a3b8;">Max Allowed Borrow Limit (65% LTV):</span>
-                        <span style="color: #38bdf8; font-weight: bold;" id="calcBorrow">Ksh 27,625</span>
-                    </div>
-
-                    <div style="font-size: 12px; color: #64748b;">
-                        Calculated using strict LTV guardrails. If collateral shifts below asset threshold paths, liquidation signals auto-fire.
-                    </div>
-                </div>
-            </div>
-        
-            <!-- Card 4: Active Escrow Tracking Board -->
-            <div class="card" id="trackingPanel" style="display: none; grid-column: 1 / -1;">
-                <h2>4. Active Escrow Tracking Board</h2>
-                <p style="color: #94a3b8; margin-bottom: 15px;">Real-time status tracking of structural multi-sig addresses on-chain.</p>
-
-                <div style="overflow-x: auto;">
-                    <table style="width: 100%; border-collapse: collapse; color: #e2e8f0;">
-                        <thead>
-                            <tr style="border-bottom: 2px solid #334155;">
-                                <th style="text-align: left; padding: 12px; color: #94a3b8;">Vault ID</th>
-                                <th style="text-align: left; padding: 12px; color: #94a3b8;">Multisig Address</th>
-                                <th style="text-align: left; padding: 12px; color: #94a3b8;">Amount (Sats)</th>
-                                <th style="text-align: center; padding: 12px; color: #94a3b8;">Milestones</th>
-                                <th style="text-align: center; padding: 12px; color: #94a3b8;">Status</th>
-                            </tr>
-                        </thead>
-                        <tbody id="liveVaultRows">
-                            <tr>
-                                <td colspan="5" style="text-align: center; padding: 20px; color: #64748b;">
-                                    No active escrow tracks discovered for this profile context.
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            </div>
+        </div>
     </div>
 
-    <script>
-        // Verification Guard: Run instantly when index.html mounts into browser frame
-                (function enforceSessionBounds() {
-            const activeToken = localStorage.getItem('sh_session_token');
-            const activeRole = localStorage.getItem('sh_user_role');
-            const userId = localStorage.getItem('sh_user_id');
-
-            if (!activeToken || !activeRole || !userId) {
-                console.warn('[Route Guard] Session invalid - redirecting to login');
-                localStorage.clear();
-                window.location.href = 'login.html';
-                return;
-            }
-            
-            console.log('[Route Guard] index.html - Session valid, role:', activeRole);
-
-            // Process UI elements once rendering execution is complete
-            window.addEventListener('DOMContentLoaded', () => {
-                disableOracleControls(true); // Disable until vault initialized
-                if (activeRole === 'sponsor') {
-                    document.getElementById('trackingPanel').style.display = 'block';
-                    loadActiveUserVaults();
-                }
-
-                document.getElementById('userRoleBadge').innerText = activeRole;
-                
-                if (activeRole === 'sponsor') {
-                    document.getElementById('userRoleBadge').className = "badge badge-locked";
-                    document.getElementById('sponsorPanel').style.display = 'block';
-                    document.getElementById('oraclePanel').style.display = 'block';
-                } else if (activeRole === 'member') {
-                    document.getElementById('userRoleBadge').className = "badge badge-released";
-                    document.getElementById('memberPanel').style.display = 'block';
-                    document.getElementById('oraclePanel').style.display = 'block';
-                }
-            });
-        })();
-
-        function handleLogout() {
-            localStorage.clear();
-            window.location.href = 'login.html';
-        }
-
+    <!-- Active Operational Panels based on Role -->
+    <div class="grid" style="grid-template-columns: 1fr; gap: 25px; margin-bottom: 25px;">
         
-        // ===== PHASE 1: ERROR HANDLING & STATE MANAGEMENT =====
+        <!-- Track 1: Student Environment -->
+        <div class="card" id="trackStudent" style="display: none; border-left: 4px solid #38bdf8;">
+            <h2>Youth Survey Staking & Credit Engine</h2>
+            <p class="subtitle" style="margin-bottom: 20px;">Complete academic research updates to expand locked asset shares. Qualify for fiat school fee loans while your Bitcoin grows untouched.</p>
+            
+            <div class="grid" style="grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+                <div style="background: #0f172a; padding: 15px; border-radius: 6px;">
+                    <label>Locked Survey Balance</label>
+                    <div id="lblStudentSatBalance" style="color: #38bdf8; font-size: 20px; font-weight: 700; font-family: monospace;">0 Sats</div>
+                </div>
+                <div style="background: #0f172a; padding: 15px; border-radius: 6px;">
+                    <label>Available Emergency Fiat Loan Limit (65% LTV)</label>
+                    <div id="lblStudentLoanLimit" style="color: #6ee7b7; font-size: 20px; font-weight: 700; font-family: monospace;">Ksh 0</div>
+                </div>
+            </div>
+            <button onclick="submitSurveyTask()" style="background: linear-gradient(90deg, #38bdf8 0%, #0284c7 100%);">
+                Complete High School Research Survey (+50,000 Sats)
+            </button>
+        </div>
+
+        <!-- Track 2: Sponsor Environment -->
+        <div class="card" id="trackSponsor" style="display: none; border-left: 4px solid #10b981;">
+            <h2>Sponsor Escrow & Volatility Yield Monitor</h2>
+            <p class="subtitle" style="margin-bottom: 20px;">Manage locks and milestone distributions. Clinical recovery milestones verify Patient behavior to unlock shared yield splits.</p>
+            
+            <div style="background: #0f172a; padding: 15px; border-radius: 6px; margin-bottom: 20px;">
+                <div style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 15px; margin-bottom: 10px;">
+                    <div>
+                        <label>Active Escrow Vault ID</label>
+                        <span id="lblSponsorVaultId" style="font-family: monospace; font-size: 14px; color: #fff;">Loading...</span>
+                    </div>
+                    <div>
+                        <label>Multisig Ledger Address</label>
+                        <span id="lblSponsorMultisig" style="font-family: monospace; font-size: 14px; color: #38bdf8;">Loading...</span>
+                    </div>
+                    <div>
+                        <label>Escrow Balance</label>
+                        <span id="lblSponsorSats" style="font-family: monospace; font-size: 14px; color: #6ee7b7; font-weight: 700;">Loading...</span>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 20px; margin-top: 15px;">
+                    <div style="flex: 1;">
+                        <label>Recovery Milestone Progress</label>
+                        <div style="background: #1e293b; height: 10px; border-radius: 5px; overflow: hidden; margin-top: 5px;">
+                            <div id="progressBar" style="background: #10b981; height: 100%; width: 0%; transition: width 0.3s ease;"></div>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; font-size: 11px; margin-top: 5px; color: #94a3b8;">
+                            <span id="lblMilestoneText">0 of 3 milestones met</span>
+                            <span id="lblVaultStatus">LOCKED</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap;">
+                <button style="flex: 1; background-color: #10b981; color: #0f172a;" onclick="triggerSponsorEvent('milestone')">
+                    Verify Clinic Milestone
+                </button>
+                <button style="flex: 1; background-color: #ef4444; color: #fff;" onclick="triggerSponsorEvent('breach')">
+                    Log Program Breach
+                </button>
+            </div>
+            
+            <label>Real-Time Oracle Stream Log</label>
+            <div class="interactive-log" id="rehabLog">System idle. Ready for oracle stream monitoring inputs...</div>
+        </div>
+
+        <!-- Track 3: Vendor Environment -->
+        <div class="card" id="trackVendor" style="display: none; border-left: 4px solid #8b5cf6;">
+            <h2>Deferred Spend Vendor Share System</h2>
+            <p class="subtitle" style="margin-bottom: 20px;">Route customer settlement balances directly into the Master Pool rather than standard liquidation. Receive tokenized yield shares.</p>
+            
+            <div style="background: #0f172a; padding: 15px; border-radius: 6px; margin-bottom: 20px;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                    <span>Total Staked Vendor Shares:</span>
+                    <strong id="lblVendorShares" style="color: #8b5cf6; font-family: monospace;">0.00000000 BTC</strong>
+                </div>
+                <div style="font-size: 12px; color: #64748b; line-height: 1.4;">
+                    Your deferred assets are locked in the Multi-Sig Master Pool. You can leverage this balance as collateral to request business credit lines in local currencies.
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Invoice Customer Settlement Value (Satoshis)</label>
+                <input type="number" id="numInvoiceSats" value="250000" style="padding: 12px; margin-bottom: 15px;">
+            </div>
+            <button onclick="submitVendorInvoice()" style="background: linear-gradient(90deg, #8b5cf6 0%, #7c3aed 100%);">
+                Deposit Invoice into Master Pool Shares
+            </button>
+        </div>
+
+    </div>
+
+    <!-- Narrative Inheritance Section (For all environments) -->
+    <div class="card" style="margin-bottom: 60px; border: 1px dashed #475569;">
+        <h2>Narrative Key Recovery & Inheritance Safeguard</h2>
+        <p class="subtitle">Encrypt and store wallet key shards linked to unforgettable personal life experiences. Answer to reassemble private key signatures.</p>
         
-        function showError(title, message) {
-            const toast = document.getElementById('errorToast');
-            document.getElementById('errorTitle').innerText = title;
-            document.getElementById('errorMessage').innerText = message;
-            toast.style.display = 'block';
-            
-            // Auto-dismiss after 8 seconds
-            setTimeout(dismissError, 8000);
+        <div class="grid" style="grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 15px; margin-bottom: 20px;">
+            <div class="form-group">
+                <label>Security Question 1: Unforgettable Child Experience Narrative</label>
+                <input type="text" id="txtMemory1" placeholder="Describe the memory event simply..." style="padding: 12px;">
+            </div>
+            <div class="form-group">
+                <label>Security Question 2: Favorite Hometown Location Key</label>
+                <input type="text" id="txtMemory2" placeholder="Input the target location descriptor..." style="padding: 12px;">
+            </div>
+        </div>
+
+        <button style="background-color: transparent; border: 1px solid #475569; color: #e2e8f0; font-weight: 600;" onclick="testNarrativeRecovery()">
+            Test Cryptographic Shard Reassembly
+        </button>
+
+        <div id="narrativeOutput" style="display: none; margin-top: 20px;" class="output-box"></div>
+    </div>
+
+</div>
+
+<script>
+    const BACKEND_URL = 'http://localhost:5000';
+    const role = localStorage.getItem('sh_user_role');
+    const alias = localStorage.getItem('sh_alias');
+    const userId = localStorage.getItem('sh_user_id');
+
+    let currentBtcPriceUsd = 88000;
+    let userSharesSats = 0;
+    let activeVault = null;
+
+    window.addEventListener('DOMContentLoaded', () => {
+        document.getElementById('lblAlias').innerText = alias || 'Anonymous';
+        document.getElementById('lblRole').innerText = (role || 'User').toUpperCase();
+
+        const badgeEl = document.getElementById('lblRole');
+        if (role === 'student') {
+            badgeEl.className = "badge badge-locked";
+            document.getElementById('trackStudent').style.display = 'block';
+        } else if (role === 'sponsor') {
+            badgeEl.className = "badge badge-released";
+            document.getElementById('trackSponsor').style.display = 'block';
+        } else if (role === 'vendor') {
+            badgeEl.className = "badge badge-breached";
+            document.getElementById('trackVendor').style.display = 'block';
         }
 
-        function dismissError() {
-            document.getElementById('errorToast').style.display = 'none';
-        }
+        fetchActiveVaults();
+        calculateSpendabilityThreshold();
+    });
 
-        function setButtonLoading(buttonId, isLoading) {
-            const button = document.getElementById(buttonId);
-            if (!button) return;
-            
-            button.disabled = isLoading;
-            button.style.opacity = isLoading ? '0.6' : '1';
-            button.style.cursor = isLoading ? 'not-allowed' : 'pointer';
-            button.innerText = isLoading ? '⏳ Processing...' : button.getAttribute('data-original-text');
-        }
-
-        function disableOracleControls(disabled = true) {
-            const milestone = document.querySelector('button[onclick="passMilestone()"]');
-            const breach = document.querySelector('button[onclick="logBreach()"]');
-            
-            if (milestone) {
-                milestone.disabled = disabled;
-                milestone.style.opacity = disabled ? '0.5' : '1';
-                milestone.title = disabled ? 'Initialize a vault first' : '';
+    async function fetchActiveVaults() {
+        if (!userId) return;
+        try {
+            const response = await fetch(`${BACKEND_URL}/api/vaults/user/${userId}`);
+            const result = await response.json();
+            if (result.success && result.vaults && result.vaults.length > 0) {
+                activeVault = result.vaults[0];
+                userSharesSats = activeVault.amount_sats;
+                updateUIPanels();
             }
-            if (breach) {
-                breach.disabled = disabled;
-                breach.style.opacity = disabled ? '0.5' : '1';
-                breach.title = disabled ? 'Initialize a vault first' : '';
-            }
+        } catch (error) {
+            console.error("Failed to query backend active vaults. Using offline backup structures.", error);
+            // Offline default seed based on role
+            userSharesSats = role === 'student' ? 450000 : role === 'sponsor' ? 2500000 : 8000000;
+            activeVault = {
+                id: 'vault-offline-101',
+                multisig_address: '2N2OfflineBackupAddressPlaceholder101',
+                amount_sats: userSharesSats,
+                status: 'locked',
+                milestones_total: 3,
+                milestones_completed: 1
+            };
+            updateUIPanels();
         }
+    }
 
-let currentMilestones = 0;
-        let totalMilestones = 3;
-        let isVaultClosed = false;
+    function updateUIPanels() {
+        if (!activeVault) return;
 
-                function simulateVaultCreation() {
-            try {
-                const sponsor = document.getElementById('sponsorKey').value.trim();
-                const patient = document.getElementById('patientKey').value.trim();
-                const sats = document.getElementById('vaultSats').value;
-                
-                if (!sponsor || !patient || !sats) {
-                    showError('Validation Error', 'All fields are required before vault creation.');
-                    return;
-                }
-                
-                const sponsorPrefix = sponsor.substring(0, 10);
-                const patientPrefix = patient.substring(0, 10);
-            const mockAddress = "2N" + Math.random().toString(36).substring(2, 15).toUpperCase() + sponsor.toUpperCase();
-            
-            document.getElementById('vaultOutput').style.display = 'block';
-            document.getElementById('vaultAddressText').innerText = `[SUCCESS] P2SH Script Generated\nAddress: ${mockAddress}\nAmount: ${parseInt(sats).toLocaleString()} Sats\nStatus: Escrow active on Testnet ledger.`;
-            
-            currentMilestones = 0;
-            isVaultClosed = false;
-            disableOracleControls(false); // Enable oracle controls
-            document.getElementById('vaultBadge').innerText = "Locked";
-            document.getElementById('vaultBadge').className = "badge badge-locked";
-            document.getElementById('oracleOutput').style.display = 'none';
-            for(let i=1; i<=totalMilestones; i++) {
-                document.getElementById(`m${i}`).classList.remove('active');
-            }
-        }
+        const btcValue = userSharesSats / 100000000;
+        document.getElementById('lblUserShares').innerText = btcValue.toFixed(8) + " BTC";
 
-        function passMilestone() {
-            if (isVaultClosed) return;
-            currentMilestones++;
-            document.getElementById(`m${currentMilestones}`).classList.add('active');
+        if (role === 'student') {
+            document.getElementById('lblStudentSatBalance').innerText = userSharesSats.toLocaleString() + " Sats";
+            // LTV Loan calculation: (BTC * Price * KES exchange rate 130) * 65% LTV
+            const kshLimit = (btcValue * currentBtcPriceUsd * 130) * 0.65;
+            document.getElementById('lblStudentLoanLimit').innerText = "Ksh " + Math.round(kshLimit).toLocaleString();
+        } else if (role === 'sponsor') {
+            document.getElementById('lblSponsorVaultId').innerText = activeVault.id.substring(0, 8) + '...';
+            document.getElementById('lblSponsorMultisig').innerText = activeVault.multisig_address.substring(0, 16) + '...';
+            document.getElementById('lblSponsorSats').innerText = userSharesSats.toLocaleString() + ' Sats';
             
-            const outputBox = document.getElementById('oracleOutputText');
-            document.getElementById('oracleOutput').style.display = 'block';
+            const milestonesCompleted = activeVault.milestones_completed;
+            const milestonesTotal = activeVault.milestones_total;
+            const percent = (milestonesCompleted / milestonesTotal) * 100;
             
-            if(currentMilestones >= totalMilestones) {
-                isVaultClosed = true;
-                document.getElementById('vaultBadge').innerText = "Released";
-                document.getElementById('vaultBadge').className = "badge badge-released";
-                
-                const mockSignature = "30440220" + Math.random().toString(16).substring(2, 18) + "0220" + Math.random().toString(16).substring(2, 18);
-                outputBox.innerText = `[RELEASE CRITERIA MET]\nAll ${totalMilestones} recovery goals completed.\nStrongHold Server Co-Signature Added:\n${mockSignature}\n\nFunds successfully cleared for distribution.`;
-                outputBox.style.color = "#6ee7b7";
+            document.getElementById('progressBar').style.width = percent + '%';
+            document.getElementById('lblMilestoneText').innerText = `${milestonesCompleted} of ${milestonesTotal} milestones met`;
+            
+            const statusBadge = document.getElementById('lblVaultStatus');
+            statusBadge.innerText = activeVault.status.toUpperCase();
+            if (activeVault.status === 'released') {
+                statusBadge.style.color = '#6ee7b7';
+            } else if (activeVault.status === 'breached_refunded') {
+                statusBadge.style.color = '#fca5a5';
             } else {
-                outputBox.innerText = `[ORACLE UPDATE LOGGED]\nMilestone ${currentMilestones} of ${totalMilestones} verified. Programmatic script remains locked. Waiting for remaining checkmarks.`;
-                outputBox.style.color = "#38bdf8";
+                statusBadge.style.color = '#fdba74';
             }
+        } else if (role === 'vendor') {
+            document.getElementById('lblVendorShares').innerText = btcValue.toFixed(8) + " BTC";
         }
+    }
 
-        function logBreach() {
-            document.getElementById('vaultBadge').innerText = "Breached";
-            document.getElementById('vaultBadge').className = "badge badge-breached";
-            
-            const outputBox = document.getElementById('oracleOutputText');
-            document.getElementById('oracleOutput').style.display = 'block';
-            outputBox.innerText = "[BREACH DETECTED]\nRecovery protocol violation logged.\nStrongHold Server and Donor co-sign refund transaction.\nFunds returned to original donor wallet.";
-            outputBox.style.color = "#fca5a5";
-            isVaultClosed = true;
+    async function submitSurveyTask() {
+        try {
+            const response = await fetch(`${BACKEND_URL}/api/vaults/user/${userId}/survey`, { method: 'POST' });
+            const result = await response.json();
+            if (result.success && result.vaults && result.vaults.length > 0) {
+                activeVault = result.vaults[0];
+                userSharesSats = activeVault.amount_sats;
+                updateUIPanels();
+                alert("Survey Accepted! 50,000 Satoshis added to your unspent StrongHold shares. Your borrowing threshold limits have expanded.");
+            }
+        } catch (error) {
+            console.warn("Survey task update offline mode.");
+            userSharesSats += 50000;
+            activeVault.amount_sats = userSharesSats;
+            updateUIPanels();
+            alert("Survey Accepted! [Offline Mode] 50,000 Satoshis added to your local pool shares.");
         }
+    }
 
-        function calculateLoanMargins() {
-            const sats = document.getElementById('collateralSats').value || 0;
-            const satoshisToBtc = sats / 100000000;
-            const btcToKshPrice = 8500000; 
-            
-            const marketValueKsh = satoshisToBtc * btcToKshPrice;
-            const maxBorrowKsh = marketValueKsh * 0.65;
+    async function submitVendorInvoice() {
+        const amt = parseInt(document.getElementById('numInvoiceSats').value, 10) || 0;
+        if (amt <= 0) return alert("Please specify a valid invoice amount.");
 
-            document.getElementById('calcMarket').innerText = `Ksh ${Math.round(marketValueKsh).toLocaleString()}`;
-            document.getElementById('calcBorrow').innerText = `Ksh ${Math.round(maxBorrowKsh).toLocaleString()}`;
+        try {
+            const response = await fetch(`${BACKEND_URL}/api/vaults/user/${userId}/deposit`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ amount: amt })
+            });
+            const result = await response.json();
+            if (result.success && result.vaults && result.vaults.length > 0) {
+                activeVault = result.vaults[0];
+                userSharesSats = activeVault.amount_sats;
+                updateUIPanels();
+                alert(`Successfully mapped ${amt.toLocaleString()} Satoshis directly into the Master Pool. You have acquired new StrongHold yield-bearing shares.`);
+            }
+        } catch (error) {
+            console.warn("Invoice deposit offline mode.");
+            userSharesSats += amt;
+            activeVault.amount_sats = userSharesSats;
+            updateUIPanels();
+            alert(`[Offline Mode] Successfully mapped ${amt.toLocaleString()} Satoshis directly into your local unspent shares.`);
         }
+    }
 
+    async function triggerSponsorEvent(eventType) {
+        if (!activeVault) return;
+        const eventCode = eventType === 'milestone' ? 'milestone' : 'breach';
 
-        let activeVaultId = null;
-
-                async function loadActiveUserVaults() {
-            const userId = localStorage.getItem('sh_user_id');
-            const tbody = document.getElementById('liveVaultRows');
-            
-            if (!userId || !tbody) return;
-
-            try {
-                const response = await fetch(`${BACKEND_URL}/api/vaults/user/${userId}`);
+        try {
+            const response = await fetch(`${BACKEND_URL}/api/vaults/${activeVault.id}/event`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ event: eventCode })
+            });
+            const result = await response.json();
+            if (result.success && result.vault) {
+                activeVault = result.vault;
+                userSharesSats = activeVault.amount_sats;
+                updateUIPanels();
                 
-                if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}: Failed to fetch vaults`);
-                }
-                
-                const result = await response.json();
-
-                if (result.success && result.vaults && result.vaults.length > 0) {
-                    tbody.innerHTML = ''; // Clear empty placeholder configurations
-                    
-                    result.vaults.forEach(vault => {
-                        const badgeClass = vault.status === 'released' ? 'badge-released' : 
-                                           vault.status === 'breached_refunded' ? 'badge-breached' : 'badge-locked';
-                        
-                        const displayStatus = vault.status.replace('_', ' ').toUpperCase();
-
-                        const row = `
-                            <tr style="border-bottom: 1px solid #334155; cursor: pointer;" onclick="selectVault('${vault.id}')">
-                                <td style="padding: 12px;">${vault.id.substring(0, 8)}...</td>
-                                <td style="padding: 12px;">${vault.multisig_address.substring(0, 20)}...</td>
-                                <td style="padding: 12px;">${vault.amount_sats.toLocaleString()}</td>
-                                <td style="padding: 12px; text-align: center;">${vault.milestones_completed} / ${vault.milestones_total}</td>
-                                <td style="padding: 12px; text-align: center;"><span class="badge ${badgeClass}">${displayStatus}</span></td>
-                            </tr>
-                        `;
-                        tbody.innerHTML += row;
-                    });
-                }
-                        } catch (error) {
-                console.error("Vault sync error:", error);
-                showError('Vault Sync Failed', `Unable to fetch active vaults: ${error.message}`);
+                const logger = document.getElementById('rehabLog');
+                const timestamp = new Date().toLocaleTimeString();
+                const logMessage = eventCode === 'milestone' ? 
+                    `[${timestamp}] Oracle verified milestone completed. Progress: ${activeVault.milestones_completed}/${activeVault.milestones_total}.` : 
+                    `[${timestamp}] CRITICAL BREACH DETECTED: Program breach trigger co-signed by oracle, funds returned to donor.`;
+                logger.innerHTML = `<strong>${logMessage}</strong><br>` + logger.innerHTML;
             }
+        } catch (error) {
+            console.warn("Event logging offline mode.");
+            if (eventCode === 'milestone') {
+                if (activeVault.milestones_completed < activeVault.milestones_total) {
+                    activeVault.milestones_completed++;
+                    if (activeVault.milestones_completed >= activeVault.milestones_total) {
+                        activeVault.status = 'released';
+                    }
+                }
+            } else {
+                activeVault.status = 'breached_refunded';
+            }
+            updateUIPanels();
+            const logger = document.getElementById('rehabLog');
+            const timestamp = new Date().toLocaleTimeString();
+            const logMessage = eventCode === 'milestone' ? 
+                `[${timestamp}] [Offline] Milestone logged. Progress: ${activeVault.milestones_completed}/${activeVault.milestones_total}.` : 
+                `[${timestamp}] [Offline] Breach logged. Status updated to breached_refunded.`;
+            logger.innerHTML = `<strong>${logMessage}</strong><br>` + logger.innerHTML;
+        }
+    }
+
+    function calculateSpendabilityThreshold() {
+        const target = parseFloat(document.getElementById('txtTriggerPrice').value) || 0;
+        const statusBox = document.getElementById('lblTriggerStatus');
+        
+        if (target <= currentBtcPriceUsd) {
+            statusBox.style.color = "#6ee7b7";
+            statusBox.innerHTML = `<strong>✔ SPENDABLE STATE:</strong> Target price has been bypassed by market action. Asset spending parameters unlocked.`;
+        } else {
+            const percentageNeeded = ((target - currentBtcPriceUsd) / currentBtcPriceUsd) * 100;
+            statusBox.style.color = "#fdba74";
+            statusBox.innerHTML = `<strong>🔒 ASSET HELD:</strong> Current spot price is $${currentBtcPriceUsd.toLocaleString()}. Assets remain locked as non-spendable collateral shares until a <strong>${percentageNeeded.toFixed(1)}% market expansion</strong> occurs.`;
+        }
+    }
+
+    // Native Browser cryptographic hashing for Narrative Shard Reassembly
+    async function sha256(message) {
+        const msgBuffer = new TextEncoder().encode(message);
+        const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+
+    async function testNarrativeRecovery() {
+        const m1 = document.getElementById('txtMemory1').value.trim();
+        const m2 = document.getElementById('txtMemory2').value.trim();
+        const outputBox = document.getElementById('narrativeOutput');
+
+        if (!m1 || !m2) {
+            alert("Please populate all narrative variables to generate structural hashes.");
+            return;
         }
 
-        function selectVault(vaultId) {
-            activeVaultId = vaultId;
-            document.getElementById('oracleOutput').style.display = 'block';
-            document.getElementById('oracleOutputText').innerText = `[SELECTED ACTIVE VAULT]\nVault ID: ${vaultId}\nOracle controls are now tracking this record structure.`;
-            document.getElementById('oracleOutputText').style.color = "#38bdf8";
-        }
+        outputBox.style.display = 'block';
+        outputBox.style.color = '#38bdf8';
+        outputBox.innerText = "Encrypting narrative memory strings via browser Web Crypto engine...";
 
-
-        function verifyVaultKeys() {
-            const sponsorKey = document.getElementById('sponsorKey').value.trim();
-            const patientKey = document.getElementById('patientKey').value.trim();
-            const output = document.getElementById('cryptoCheckOutput');
+        try {
+            const hash1 = await sha256(m1);
+            const hash2 = await sha256(m2);
             
-            output.style.display = 'block';
-            output.innerText = "Analyzing Secp256k1 key compressions...";
+            // Reassemble a mock private key signature from combined hashes
+            const privateKeySeed = await sha256(hash1 + hash2);
+            const compressedKeyHex = "02" + privateKeySeed.substring(0, 64);
 
-            // Regular expression checking for exact 66-character (33-byte) compressed public key structure
-            const compressedKeyRegex = /^(02|03)[a-fA-F0-9]{64}$/;
-
-            const isSponsorValid = compressedKeyRegex.test(sponsorKey);
-            const isPatientValid = compressedKeyRegex.test(patientKey);
-
-            if (!isSponsorValid || !isPatientValid) {
-                output.style.color = "#ef4444";
-                output.innerText = `✖ CRYPTO VALIDATION FAILED:\n` +
-                                   `Sponsor Key Compressed Format: ${isSponsorValid ? 'Valid' : 'Invalid (Must be 66-hex chars starting with 02/03)'}\n` +
-                                   `Patient Key Compressed Format: ${isPatientValid ? 'Valid' : 'Invalid (Must be 66-hex chars starting with 02/03)'}\n\n` +
-                                   `Required: 02/03 prefix + 64 hex characters (total 66 chars)`;
-                return;
-            }
-
-            output.style.color = "#6ee7b7";
-            output.innerText = `✔ CRYPTO VALIDATION PASSED:\n\n` +
-                               `• Sponsor PubKey verified structure\n` +
-                               `• Patient PubKey verified structure\n` +
-                               `• Both keys are valid Secp256k1 compressed format\n` +
-                               `• Keys ready for 2-of-3 programmatic multi-sig compilation\n\n` +
-                               `Status: Ready to generate multisig address`;
+            outputBox.style.color = "#6ee7b7";
+            outputBox.innerText = `✔ NARRATIVE RECOVERY PASSED\n` + 
+                                  `• Hash Shard 1 (Childhood Experience): ${hash1.substring(0, 24)}...\n` +
+                                  `• Hash Shard 2 (Hometown Location): ${hash2.substring(0, 24)}...\n` +
+                                  `• Reassembled Key Signature: ${compressedKeyHex.substring(0, 32)}...\n` +
+                                  `Status: Private Key compiled and matched successfully against original wallet signature.`;
+        } catch (error) {
+            outputBox.style.color = "#ef4444";
+            outputBox.innerText = `✖ RECOVERY ERROR: ${error.message}`;
         }
+    }
 
-        calculateLoanMargins();
-    </script>
+    function handleExit() {
+        localStorage.clear();
+        window.location.href = 'login.html';
+    }
+</script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-

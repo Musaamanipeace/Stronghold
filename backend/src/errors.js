@@ -1,4 +1,4 @@
-﻿// ====================================================================
+// ====================================================================
 // STRONGHOLD SYSTEM CENTRALIZED ERROR MANAGEMENT MODULE (errors.js)
 // ====================================================================
 
@@ -42,9 +42,9 @@ class MultisigThresholdError extends StrongHoldError {
     constructor(currentSigs, requiredSigs, detailedLog = null) {
         super(
             'ERR_MULTISIG_THRESHOLD_FAIL', 
-            Escrow signature threshold mismatch. Provided ${currentSigs} of ${requiredSigs} required keys., 
+            `Escrow signature threshold mismatch. Provided ${currentSigs} of ${requiredSigs} required keys.`, 
             403, 
-            detailedLog || The programmatic spending path remains locked. Ensure clinical oracle validations or time-locks pass before attempting co-signing.
+            detailedLog || `The programmatic spending path remains locked. Ensure clinical oracle validations or time-locks pass before attempting co-signing.`
         );
     }
 }
@@ -72,9 +72,9 @@ class LightningPaymentError extends StrongHoldError {
 
 // Global Express error handler middleware mapping exceptions to stylized responses
 const errorHandlerMiddleware = (err, req, res, next) => {
-    console.error(\x1b[31m[StrongHold System Error] [${err.code || 'UNKNOWN_CODE'}]: ${err.message}\x1b[0m);
+    console.error(`\x1b[31m[StrongHold System Error] [${err.code || 'UNKNOWN_CODE'}]: ${err.message}\x1b[0m`);
     if (err.detailedLog && err.detailedLog !== err.message) {
-        console.error(\x1b[37mDetail Trace: ${err.detailedLog}\x1b[0m);
+        console.error(`\x1b[37mDetail Trace: ${err.detailedLog}\x1b[0m`);
     }
 
     if (err instanceof StrongHoldError) {

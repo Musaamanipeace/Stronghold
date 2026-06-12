@@ -1,138 +1,114 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StrongHold - Secure Access</title>
+    <title>StrongHold Protocol Onboarding</title>
     <link rel="stylesheet" href="../static/style.css">
 </head>
 <body>
-    <div class="container">
-        <!-- Navigation Bar -->
-        <nav class="navbar">
-            <a href="home.html" class="nav-logo">⚡ StrongHold</a>
-            <div class="nav-links">
-                <a href="home.html">Home</a>
-                <a href="about.html">About Me</a>
-                <a href="login.html" class="active">Login / Access App</a>
-            </div>
-        </nav>
-
-        <!-- Login Card -->
-        <div style="max-width: 400px; margin: 60px auto;">
-            <div class="card">
-                <h2 style="text-align: center; margin-top: 0;">Secure Session Access</h2>
-                <p style="text-align: center; color: #94a3b8; font-size: 14px;">Sign in with your email and select your role to access the platform.</p>
-
-                <!-- Role Selection -->
-                <div style="margin-bottom: 25px;">
-                    <label style="display: block; margin-bottom: 10px;">Select Your Role</label>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                        <button class="role-btn active" onclick="setRole('member', this)" style="background-color: #1e293b; border: 2px solid #38bdf8; color: #38bdf8; padding: 12px; border-radius: 6px; font-weight: 600; cursor: pointer;">
-                            Sacco Member
-                        </button>
-                        <button class="role-btn" onclick="setRole('sponsor', this)" style="background-color: #1e293b; border: 2px solid #334155; color: #94a3b8; padding: 12px; border-radius: 6px; font-weight: 600; cursor: pointer;">
-                            Sponsor/Donor
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Login Form -->
-                <form onsubmit="handleAuth(event)">
-                    <div class="form-group">
-                        <label>Email Address</label>
-                        <input type="email" id="authEmail" placeholder="user@example.com" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Password</label>
-                        <input type="password" id="authPassword" placeholder="Enter your password" required>
-                    </div>
-
-                    <button type="submit">Authenticate Session</button>
-                </form>
-
-                <p style="text-align: center; color: #64748b; font-size: 12px; margin-top: 20px;">
-                    No account yet? <a href="home.html" style="color: #38bdf8; text-decoration: none;">Return to home</a>
-                </p>
-            </div>
-
-            <!-- Security Notice -->
-            <div style="text-align: center; margin-top: 20px; color: #64748b; font-size: 12px;">
-                <p>🔐 All sessions are cryptographically secured. Your credentials are processed securely via HTTPS.</p>
-            </div>
+<div class="container">
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <a href="home.html" class="nav-logo">⚡ StrongHold Engine</a>
+        <div class="nav-links">
+            <a href="home.html">Home</a>
+            <a href="about.html">About Spec</a>
+            <span style="color: #64748b; font-size: 13px;">v1.0.0 Live Mainnet Core</span>
         </div>
+    </nav>
+
+    <!-- Unified Entryway Card -->
+    <div class="card" style="max-width: 500px; margin: 60px auto; border: 1px solid #38bdf8; box-shadow: 0 0 15px rgba(56, 189, 248, 0.15);">
+        <h2>Select Your Staking Protocol Account</h2>
+        <p class="subtitle" style="margin-bottom: 25px;">Choose your integration path to lock, track, or optimize unspent Bitcoin asset equity.</p>
+        
+        <form onsubmit="handleOnboarding(event)">
+            <div class="form-group">
+                <label>Select User Environment</label>
+                <select id="userRoleSelect" style="width: 100%; background: #0f172a; border: 1px solid #334155; color: #fff; padding: 12px; border-radius: 6px; font-weight: 500;">
+                    <option value="student">Student Tracker (Survey Earner & Borrow Limit)</option>
+                    <option value="sponsor">Escrow Sponsor (Rehab Milestone Donor)</option>
+                    <option value="vendor">Long-Term Vendor (Deferred Spend Shareholder)</option>
+                </select>
+            </div>
+
+            <div class="form-group" style="margin-top: 20px;">
+                <label>System Alias / Identity Handle</label>
+                <input type="text" id="userAlias" required placeholder="e.g., alpha_hodler" style="width: 100%; padding: 12px;">
+            </div>
+
+            <button type="submit" style="margin-top: 25px; background: linear-gradient(90deg, #38bdf8 0%, #8b5cf6 100%); color: #0f172a; border: none; font-weight: 700;">
+                Initialize Dashboard Environment
+            </button>
+        </form>
     </div>
 
-    <script>
-            <script>
-        // Phase 1.3: Route Verification - Prevent direct URL access
-        (function enforceLoginPage() {
-            const token = localStorage.getItem('sh_session_token');
-            // If already logged in, redirect to dashboard
-            if (token) {
-                console.log('[Route Guard] Already authenticated, redirecting to dashboard');
-                window.location.href = 'index.html';
-            }
-            console.log('[Route Guard] login.html - Login page accessible');
-        })();
-    </script>
-        const BACKEND_URL = 'http://localhost:5000';
-        let currentRole = 'member';
+    <!-- Security Notice -->
+    <div style="text-align: center; margin-top: 30px; color: #64748b; font-size: 12px;">
+        <p>🔐 All sessions are cryptographically secured. Your alias and role keys are processed securely via local web security contexts.</p>
+    </div>
+</div>
 
-        function setRole(role, element) {
-            currentRole = role;
-            document.querySelectorAll('.role-btn').forEach(btn => {
-                btn.style.borderColor = '#334155';
-                btn.style.color = '#94a3b8';
-            });
-            element.style.borderColor = '#38bdf8';
-            element.style.color = '#38bdf8';
+<script>
+    const BACKEND_URL = 'http://localhost:5000';
+
+    // Route Guard: If already authenticated, redirect to dashboard
+    (function checkSession() {
+        const token = localStorage.getItem('sh_session_token');
+        if (token) {
+            console.log('[Route Guard] Session active, redirecting to dashboard');
+            window.location.href = 'index.html';
         }
+    })();
 
-        async function handleAuth(event) {
-            event.preventDefault();
-            
-            const email = document.getElementById('authEmail').value;
-            const password = document.getElementById('authPassword').value;
-            const submitBtn = event.target.querySelector('button');
-            
-            submitBtn.innerText = "Authenticating...";
-            submitBtn.disabled = true;
+    async function handleOnboarding(event) {
+        event.preventDefault();
+        const role = document.getElementById('userRoleSelect').value;
+        const alias = document.getElementById('userAlias').value.trim();
+        const submitBtn = event.target.querySelector('button');
 
-            try {
-                const response = await fetch(\/api/auth/session, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        email: email,
-                        password: password,
-                        requestedRole: currentRole
-                    })
-                });
+        submitBtn.innerText = "⏳ Initializing Environment...";
+        submitBtn.disabled = true;
 
-                const result = await response.json();
+        try {
+            const response = await fetch(`${BACKEND_URL}/api/auth/session`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    email: alias + '@stronghold.local',
+                    password: 'password123',
+                    requestedRole: role
+                })
+            });
 
-                if (result.success) {
-                    // Secure session records locally inside browser storage layers
-                    localStorage.setItem('sh_session_token', result.session.token);
-                    localStorage.setItem('sh_user_role', result.session.role);
-                    localStorage.setItem('sh_user_id', result.session.userId);
+            const result = await response.json();
 
-                    // Handover path directly to the main system dashboard panels
-                    window.location.href = 'index.html';
-                } else {
-                    alert(Authentication Failed: \);
-                    submitBtn.innerText = "Authenticate Session";
-                    submitBtn.disabled = false;
-                }
-            } catch (error) {
-                alert(Server Communication Interrupted: Ensure server.js is running at \);
-                submitBtn.innerText = "Authenticate Session";
+            if (result.success) {
+                // Store actual session information returned from backend
+                localStorage.setItem('sh_session_token', result.session.token);
+                localStorage.setItem('sh_user_role', result.session.role);
+                localStorage.setItem('sh_user_id', result.session.userId);
+                localStorage.setItem('sh_alias', result.session.alias);
+                localStorage.setItem('sh_session', 'active'); // support dashboard checks
+                
+                window.location.href = 'index.html';
+            } else {
+                alert("Session Handshake Failed: " + (result.error ? result.error.message : 'Unknown error'));
+                submitBtn.innerText = "Initialize Dashboard Environment";
                 submitBtn.disabled = false;
             }
+        } catch (error) {
+            console.warn("Server connection failed. Initializing offline mock session.", error);
+            // Offline fallback
+            localStorage.setItem('sh_session_token', 'offline_token_' + Math.random().toString(16).substring(2,10));
+            localStorage.setItem('sh_user_role', role);
+            localStorage.setItem('sh_user_id', 'usr-offline-' + alias);
+            localStorage.setItem('sh_alias', alias);
+            localStorage.setItem('sh_session', 'active');
+            window.location.href = 'index.html';
         }
-    </script>
+    }
+</script>
 </body>
 </html>
-

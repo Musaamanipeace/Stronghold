@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -13,36 +13,36 @@
             <a href="home.html" class="nav-logo">⚡ StrongHold</a>
             <div class="nav-links">
                 <a href="home.html">Home</a>
-                <a href="about.html" class="active">About Me</a>
-                <a href="login.html">Login / Access App</a>
+                <a href="about.html" class="active">About Spec</a>
+                <a href="login.html">Launch Terminal</a>
             </div>
         </nav>
 
         <!-- About Section -->
-        <section class="hero-section">
-            <h1>Engineering Specification</h1>
+        <section class="hero-section" style="border: 1px solid #8b5cf6; box-shadow: 0 0 20px rgba(139, 92, 246, 0.08);">
+            <h1 style="background: linear-gradient(90deg, #8b5cf6 0%, #38bdf8 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                Engineering Specification
+            </h1>
             <p style="color: #94a3b8; font-size: 16px; line-height: 1.8; margin: 20px auto; max-width: 800px; text-align: left;">
-                StrongHold is a production-grade, non-custodial Bitcoin escrow platform designed to enable recovery-centered lending and decentralized community savings (SACCO) coordination. 
-                Built on open-source Bitcoin infrastructure, the system enforces financial accountability through cryptographic multisignature contracts, verifiable clinical milestones, 
-                and transparent collateral management.
+                StrongHold is a production-grade, non-custodial Bitcoin optimization protocol. Built on open-source Bitcoin infrastructure, the system enforces financial accountability and establishes collateral lending frameworks through cryptographic multisignature contracts, verifiable clinical milestones, and deferred merchant spend pools.
             </p>
         </section>
 
         <!-- Tech Stack -->
-        <div class="grid">
+        <div class="grid" style="margin-bottom: 40px;">
             <div class="card">
                 <h2>🔗 Bitcoin Layer (L1)</h2>
-                <ul style="color: #94a3b8; line-height: 1.8; padding-left: 20px;">
+                <ul style="color: #94a3b8; line-height: 1.8; padding-left: 20px; font-size: 13px;">
                     <li><strong>bitcoinjs-lib:</strong> Multisig script building & transaction crafting</li>
                     <li><strong>ecpair + tiny-secp256k1:</strong> ECDSA signing & key management</li>
                     <li><strong>Mempool.space API:</strong> Transaction broadcast & confirmation tracking</li>
-                    <li><strong>P2WSH (P2SH):</strong> 2-of-3 witness script escrow contracts</li>
+                    <li><strong>P2WSH:</strong> 2-of-3 witness script escrow contracts</li>
                 </ul>
             </div>
 
             <div class="card">
                 <h2>⚡ Lightning Network</h2>
-                <ul style="color: #94a3b8; line-height: 1.8; padding-left: 20px;">
+                <ul style="color: #94a3b8; line-height: 1.8; padding-left: 20px; font-size: 13px;">
                     <li><strong>Alby WebLN API:</strong> In-browser Lightning payments & invoice handling</li>
                     <li><strong>LNbits:</strong> Self-hosted or community Lightning node gateway</li>
                     <li><strong>Micro-payments:</strong> Instant survey compensation at scale</li>
@@ -51,7 +51,7 @@
 
             <div class="card">
                 <h2>🗄️ Backend & Database</h2>
-                <ul style="color: #94a3b8; line-height: 1.8; padding-left: 20px;">
+                <ul style="color: #94a3b8; line-height: 1.8; padding-left: 20px; font-size: 13px;">
                     <li><strong>Node.js + Express:</strong> RESTful API server & middleware</li>
                     <li><strong>Supabase (PostgreSQL):</strong> User accounts, vault state, oracle logs</li>
                     <li><strong>JWT Sessions:</strong> Stateless authentication tokens</li>
@@ -60,59 +60,118 @@
 
             <div class="card">
                 <h2>🎨 Frontend & UX</h2>
-                <ul style="color: #94a3b8; line-height: 1.8; padding-left: 20px;">
-                    <li><strong>Vanilla JavaScript:</strong> No framework overhead, cryptographic UI state</li>
-                    <li><strong>Responsive CSS Grid:</strong> Mobile-first dark theme dashboard</li>
-                    <li><strong>localStorage:</strong> Client-side session persistence & key management</li>
+                <ul style="color: #94a3b8; line-height: 1.8; padding-left: 20px; font-size: 13px;">
+                    <li><strong>Vanilla JavaScript:</strong> No framework overhead, Web Crypto API</li>
+                    <li><strong>Responsive Grid:</strong> Mobile-first dark theme dashboard</li>
+                    <li><strong>localStorage:</strong> Session persistence & credentials caching</li>
                 </ul>
             </div>
         </div>
 
-        <!-- Core Mechanisms -->
+        <!-- Core Cryptographic Mechanisms -->
         <section style="margin-top: 40px;">
-            <h2 style="color: #38bdf8; margin-bottom: 20px;">Core Mechanisms</h2>
+            <h2 style="color: #38bdf8; margin-bottom: 20px;">1. The Cryptographic Rules Underlying the App</h2>
+            <p style="color: #94a3b8; margin-bottom: 20px;">StrongHold relies on native Bitcoin logic to secure capital without central custodians or third-party trusted entities:</p>
             
-            <div class="card">
-                <h3 style="color: #f1f5f9; margin-top: 0;">2-of-3 Multisig Escrow (Model A: Recovery-Bound)</h3>
-                <p style="color: #94a3b8; margin: 0;">
-                    <strong>Signers:</strong> Sponsor (Donor), Patient (Recipient), StrongHold Server (Oracle)<br>
-                    <strong>Release Path:</strong> Sponsor + Patient signatures after clinical milestones verified<br>
-                    <strong>Breach Path:</strong> Sponsor + Server signatures to refund on protocol violation<br>
-                    <strong>Script Type:</strong> OP_CHECKMULTISIG (2-of-3 threshold)
-                </p>
+            <div class="grid" style="margin-bottom: 30px;">
+                <div class="card">
+                    <h3 style="color: #f1f5f9; margin-top: 0;">🔐 2-of-3 Multisig Escrows</h3>
+                    <p style="color: #94a3b8; font-size: 14px; line-height: 1.6;">
+                        Funds are locked in a unique Pay-to-Script-Hash (P2SH) address compiled from three keys:
+                    </p>
+                    <ul style="color: #94a3b8; font-size: 13px; line-height: 1.8; padding-left: 20px;">
+                        <li><strong>Recipient Key</strong> (student, patient in recovery)</li>
+                        <li><strong>Counterparty Key</strong> (survey donor, sponsor/lender)</li>
+                        <li><strong>StrongHold Server Key</strong> (automated oracle arbitrator)</li>
+                    </ul>
+                    <p style="color: #94a3b8; font-size: 13px; margin-top: 10px;">
+                        At least <strong>two out of three keys</strong> must sign to spend the locked collateral.
+                    </p>
+                </div>
+
+                <div class="card">
+                    <h3 style="color: #f1f5f9; margin-top: 0;">⏳ Time-Locks (CLTV)</h3>
+                    <p style="color: #94a3b8; font-size: 14px; line-height: 1.6; margin: 0;">
+                        Using <code>OP_CHECKLOCKTIMEVERIFY</code>, script conditions are written directly into transaction outputs. This ensures that regardless of signature combinations, locked Bitcoin cannot move on-chain until a specific block height or UNIX timestamp is reached.
+                    </p>
+                </div>
+
+                <div class="card">
+                    <h3 style="color: #f1f5f9; margin-top: 0;">⚡ Hashed Timelock Contracts (HTLCs)</h3>
+                    <p style="color: #94a3b8; font-size: 14px; line-height: 1.6; margin: 0;">
+                        Leveraged for Lightning Network payments. HTLCs secure payments by requiring the recipient to produce a cryptographic preimage of a hash within a designated timeline to claim the micro-payout.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Loan Service & Enforcement -->
+        <section style="margin-top: 40px;">
+            <h2 style="color: #38bdf8; margin-bottom: 20px;">2. Recipient Loan Services & Rule Enforcement</h2>
+            
+            <div class="grid" style="margin-bottom: 30px;">
+                <div class="card">
+                    <h3 style="color: #f1f5f9; margin-top: 0;">💵 Stablecoin & Mobile Money Lending</h3>
+                    <p style="color: #94a3b8; font-size: 14px; line-height: 1.6; margin: 0;">
+                        Recipients receive immediate spending liquidity (stablecoins or local mobile money loans like M-Pesa) backed entirely by their locked Bitcoin. This safeguards the borrower from being forced to liquidate their appreciating digital assets for short-term emergency costs.
+                    </p>
+                </div>
+
+                <div class="card">
+                    <h3 style="color: #f1f5f9; margin-top: 0;">⚖️ Liquidation & Recovery Protocols</h3>
+                    <p style="color: #94a3b8; font-size: 14px; line-height: 1.6; margin: 0;">
+                        If a borrower defaults or fails clinical milestones (e.g. failing a drug screen), the StrongHold server oracle detects the breach. The server co-signs with the <strong>Lender/Donor Key</strong> to execute a liquidation refund, transferring the collateral to cover outstanding debt. If complied with, the server co-signs with the <strong>Recipient Key</strong> to unlock the asset.
+                    </p>
+                </div>
+
+                <div class="card">
+                    <h3 style="color: #f1f5f9; margin-top: 0;">🔌 Server-Client Communication</h3>
+                    <ul style="color: #94a3b8; font-size: 13px; line-height: 1.8; padding-left: 20px; margin: 0;">
+                        <li><strong>On-Chain/Off-Chain:</strong> Wallet creation and key pair derivation occur locally in the client browser.</li>
+                        <li><strong>Webhooks & APIs:</strong> Server monitors the ledger for transaction confirmations while linking to clinical databases.</li>
+                        <li><strong>Handshake:</strong> Server generates its signature fraction and transmits it to finalize transaction construction.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Strategic Partners in Kenya -->
+        <section style="margin-top: 40px;">
+            <h2 style="color: #38bdf8; margin-bottom: 20px;">3. Potential Strategic Partners (Kenya)</h2>
+            <p style="color: #94a3b8; margin-bottom: 20px;">To turn this protocol into an institutionalized SACCO asset model, StrongHold targets prominent local organizations:</p>
+            
+            <div class="grid" style="margin-bottom: 30px;">
+                <div class="card">
+                    <h3 style="color: #f1f5f9; margin-top: 0;">🏥 Rehabilitation & Behavioral Health</h3>
+                    <ul style="color: #94a3b8; font-size: 13px; line-height: 1.8; padding-left: 20px; margin: 0;">
+                        <li><strong>Asumbi Treatment Centre:</strong> A structured, multi-facility residential treatment network in Nairobi and Homa Bay, ideal for milestone payouts.</li>
+                        <li><strong>Chiromo Hospital Group:</strong> Premier private mental health and addiction recovery institution in Nairobi. Enables smart contract escrow setups for family recovery trusts.</li>
+                        <li><strong>NACADA:</strong> Government regulatory authority, working via accredited community organizations to validate legal compliance.</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <h3 style="color: #f1f5f9; margin-top: 0;">💼 Youth Tasks & Surveys</h3>
+                    <ul style="color: #94a3b8; font-size: 13px; line-height: 1.8; padding-left: 20px; margin: 0;">
+                        <li><strong>Ajira Digital Program:</strong> Kenya's government-backed initiative linking youth to digital work. StrongHold could provide a direct "Save in Bitcoin" option for gig earnings.</li>
+                        <li><strong>GeoPoll Kenya:</strong> Large mobile survey provider in Africa. Lightning Network payouts allow instant, micro-payments for market research tasks.</li>
+                    </ul>
+                </div>
             </div>
 
-            <div class="card">
-                <h3 style="color: #f1f5f9; margin-top: 0;">Volunteer Vesting (Model B: Task-Bound with CLTV)</h3>
-                <p style="color: #94a3b8; margin: 0;">
-                    <strong>Mechanism:</strong> Tasks unlock Bitcoin rewards after 14-day warranty lock (CheckLockTimeVerify)<br>
-                    <strong>Purpose:</strong> Ensures work quality & protects platform from malicious submissions<br>
-                    <strong>Script Type:</strong> OP_CLTV + OP_DROP (time-lock branch conditions)
-                </p>
-            </div>
-
-            <div class="card">
-                <h3 style="color: #f1f5f9; margin-top: 0;">SACCO Collateral Management (65% LTV Rule)</h3>
-                <p style="color: #94a3b8; margin: 0;">
-                    <strong>Calculation:</strong> Max Borrow = (BTC Holdings × Price) × 0.65<br>
-                    <strong>Liquidation Trigger:</strong> Automatic when collateral ratio drops below 65%<br>
-                    <strong>Purpose:</strong> Protects pooled member savings from market volatility
+            <!-- Future Spec Note -->
+            <div class="card" style="border: 1px solid #8b5cf6; background: linear-gradient(135deg, #1e1b4b 0%, #1e293b 100%); margin-bottom: 60px;">
+                <h3 style="color: #c084fc; margin-top: 0;">💡 Deepening the Technical Foundation: Simplicity Smart Contracts</h3>
+                <p style="color: #cbd5e1; font-size: 14px; line-height: 1.6; margin: 0;">
+                    To scale beyond classic multisig and locktime constraints, we are tracking developments like <strong>Verifiable Smart Contracts with Simplicity at Bitcoin 2026</strong>. Simplicity offers a formal verification framework that allows developers to write robust, mathematically provable smart contracts directly on Bitcoin script layers, eliminating the security exploits of Turing-complete virtual machines like EVM.
                 </p>
             </div>
         </section>
 
         <!-- Footer -->
-        <div style="text-align: center; margin-top: 60px; padding-top: 20px; border-top: 1px solid #334155; color: #64748b; font-size: 13px;">
-            <p>StrongHold © 2024 | Open-Source | MIT License | Bitcoin + Lightning Network</p>
+        <div style="text-align: center; margin-top: 40px; padding-top: 20px; border-top: 1px solid #334155; color: #64748b; font-size: 13px; margin-bottom: 40px;">
+            <p>StrongHold © 2026 | Open-Source | MIT License | Bitcoin + Lightning Network</p>
         </div>
     </div>
-    <script>
-        // Phase 1.3: Route Verification - Prevent direct URL access
-        (function enforcePublicPage() {
-            const token = localStorage.getItem('sh_session_token');
-            // Public page - allow all access
-            console.log('[Route Guard] about.html - Public page accessible');
-        })();
-    </script></body>
+</body>
 </html>
-
